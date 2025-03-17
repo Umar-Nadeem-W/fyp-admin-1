@@ -28,16 +28,43 @@ import {
   AdminPanelSettingsOutlined,
   TrendingUpOutlined,
   PieChartOutlined,
+  AssignmentOutlined,
+  BarChart,
+  Campaign,
+  Report,
+  Sms,
 } from "@mui/icons-material";
 
 import { FlexBetween } from ".";
 import profileImage from "assets/profile.jpeg";
+import { Speaker } from "lucide-react";
+import { Bar } from "@nivo/bar";
 
 // Nav items
 const navItems = [
   {
     text: "Dashboard",
     icon: <HomeOutlined />,
+  },
+  {
+    text: "Tasks",
+    icon: <AssignmentOutlined/>,
+  },
+  {
+    text: "Reports",
+    icon: <Report />,
+  },
+  {
+    text:"Communications",
+    icon:<Sms/>
+  },
+  {
+    text: "Announcements",
+    icon :<Campaign/>
+  },
+  {
+    text: "Analytics",
+    icon: <BarChart />,
   },
   {
     text: "Client Facing",
@@ -135,7 +162,8 @@ const Sidebar = ({
             },
           }}
         >
-          <Box width="100%">
+
+            <Box width="100%">
             {/* Brand Info */}
             <Box m="1.5rem 2rem 2rem 3rem">
               <FlexBetween color={theme.palette.secondary.main}>
@@ -166,7 +194,7 @@ const Sidebar = ({
                 )}
               </FlexBetween>
             </Box>
-
+            
             {/* Sidebar items */}
             <List>
               {navItems.map(({ text, icon }) => {

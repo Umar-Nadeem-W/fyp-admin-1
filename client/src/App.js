@@ -4,11 +4,14 @@ import { createTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+
 // Theme
 import { themeSettings } from "theme";
 
 // Scenes
 import {
+
+  Tasks,
   Layout,
   Dashboard,
   Products,
@@ -21,6 +24,10 @@ import {
   Breakdown,
   Admin,
   Performance,
+  Analytics,
+  Reports,
+  Announcements, 
+  Communications,
 } from "scenes";
 
 // App
@@ -42,6 +49,7 @@ const App = () => {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/reports" element={<Reports />} />
               <Route path="/customers" element={<Customers />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/geography" element={<Geography />} />
@@ -50,7 +58,11 @@ const App = () => {
               <Route path="/monthly" element={<Monthly />} />
               <Route path="/breakdown" element={<Breakdown />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path ="/tasks" element={<Tasks/>}/>
+              <Route path ='/announcements' element = {<Announcements/>}/>
               <Route path="/performance" element={<Performance />} />
+              <Route path ="/analytics" element={<Analytics/>}></Route>
+              <Route path ="/communications" element={<Communications/>}></Route>
             </Route>
           </Routes>
         </ThemeProvider>
