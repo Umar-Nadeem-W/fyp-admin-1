@@ -4,7 +4,6 @@ import { createTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-
 // Theme
 import { themeSettings } from "theme";
 
@@ -14,8 +13,8 @@ import {
   Tasks,
   Layout,
   Dashboard,
-  Products,
-  Customers,
+  Farm,
+  Workers,
   Transactions,
   Geography,
   Overview,
@@ -28,6 +27,7 @@ import {
   Reports,
   Announcements, 
   Communications,
+  FarmDetails
 } from "scenes";
 
 // App
@@ -48,9 +48,10 @@ const App = () => {
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/products" element={<Products />} />
+              <Route path="/farm" element={<Farm />} />
               <Route path="/reports" element={<Reports />} />
-              <Route path="/customers" element={<Customers />} />
+              <Route path="/workers" element={<Workers />} />
+              <Route path="/farm/farmdetails" element={<FarmDetails />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/geography" element={<Geography />} />
               <Route path="/overview" element={<Overview />} />

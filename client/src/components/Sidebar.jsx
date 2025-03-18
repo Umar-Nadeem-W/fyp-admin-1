@@ -71,11 +71,11 @@ const navItems = [
     icon: null,
   },
   {
-    text: "Products",
+    text: "Farm",
     icon: <ShoppingCartOutlined />,
   },
   {
-    text: "Customers",
+    text: "Workers",
     icon: <Groups2Outlined />,
   },
   {

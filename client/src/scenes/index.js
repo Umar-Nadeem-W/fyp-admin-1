@@ -3,8 +3,8 @@
 
 import Layout from "./layout";
 import Dashboard from "./dashboard";
-import Products from "./products";
-import Customers from "./customers";
+import Farm from "./farm";
+import Workers from "./workers";
 import Transactions from "./transactions";
 import Geography from "./geography";
 import Overview from "./overview";
@@ -18,13 +18,14 @@ import Analytics from "./analytics";
 import Reports from "./reports";
 import Announcements from "./announcements";
 import Communications from "./communications";
+import FarmDetails from "./farm/[farmdetails]";
 
 // export scenes
 export {
   Layout,
   Dashboard,
-  Products,
-  Customers,
+  Farm,
+  Workers,
   Transactions,
   Geography,
   Overview,
@@ -38,5 +39,6 @@ export {
   Reports,
   Announcements,
   Communications,
+  FarmDetails
   
 };
