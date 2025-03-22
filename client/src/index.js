@@ -5,6 +5,7 @@ import globalReducer from "state";
 import { Provider } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { api } from "state/api";
+import { Suspense } from "react";
 
 import App from "./App";
 
@@ -23,6 +24,8 @@ setupListeners(store.dispatch);
 // Rendering App
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <App />
+    <Suspense fallback={<div>Loading...</div>}>
+      <App />
+    </Suspense>
   </Provider>
 );

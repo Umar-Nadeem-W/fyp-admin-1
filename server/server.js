@@ -135,6 +135,18 @@ app.post("/api/farms", (req, res) => {
   });
 });
 
+app.get("/api/workers", (req, res) => {
+  const query = "SELECT * FROM farm_worker";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching workers:", err);
+      res.status(500).json({ error: "Failed to fetch workers" });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 // Get all ponds
 app.get("/api/ponds", (req, res) => {
   const farm_id = req.query.farm_id;

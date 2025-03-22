@@ -1,14 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Grid,
+  Paper,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+const initialFarmState = {
+  name: "",
+  address: "",
+  city: "",
+  state: "",
+  country: "",
+  zip: "",
+  number_of_ponds: "",
+  number_of_workers: "",
+};
 
 const FarmManagement = () => {
   const [farms, setFarms] = useState([]);
   const [selectedFarm, setSelectedFarm] = useState(null);
   const [showFarmForm, setShowFarmForm] = useState(false);
-  const [farmData, setFarmData] = useState({ name: "", address: "", city: "", state: "", country: "", zip: "", number_of_ponds: "", number_of_workers: "" });
+  const [farmData, setFarmData] = useState(initialFarmState);
   const navigate = useNavigate();
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     fetchFarms();
@@ -27,17 +50,24 @@ const FarmManagement = () => {
     e.preventDefault();
     try {
       if (selectedFarm) {
-        await axios.put(`http://localhost:5000/api/farms/${selectedFarm}`, farmData);
+        await axios.put(
+          `http://localhost:5000/api/farms/${selectedFarm}`,
+          farmData
+        );
       } else {
         await axios.post("http://localhost:5000/api/farms", farmData);
       }
       fetchFarms();
-      setShowFarmForm(false);
-      setSelectedFarm(null);
-      setFarmData({ name: "", address: "", city: "", state: "", country: "", zip: "", number_of_ponds: "", number_of_workers: "" });
+      resetForm();
     } catch (error) {
       console.error("Error saving farm:", error);
     }
+  };
+
+  const resetForm = () => {
+    setShowFarmForm(false);
+    setSelectedFarm(null);
+    setFarmData(initialFarmState);
   };
 
   const handleDeleteFarm = async (farmId) => {
@@ -49,44 +79,124 @@ const FarmManagement = () => {
     }
   };
 
-  return (
-    <Box m="1.5rem">
-      <Typography variant="h4">Farm Management</Typography>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFarmData({ ...farmData, [name]: value });
+  };
 
-      <Button variant="contained" onClick={() => { setShowFarmForm(true); setSelectedFarm(null); }} sx={{ mt: 2 }}>
+  return (
+    <Box p={isSmallScreen ? 2 : 4}>
+      <Typography variant="h4" gutterBottom>
+        Farm Management
+      </Typography>
+
+      <Button
+        variant="contained"
+        onClick={() => {
+          setShowFarmForm(true);
+          setSelectedFarm(null);
+          setFarmData(initialFarmState);
+        }}
+        sx={{ mb: 3 }}
+      >
         Add Farm
       </Button>
 
       {showFarmForm && (
-        <Box component="form" mt={2} p={2} onSubmit={handleFarmSubmit} sx={{ border: "1px solid gray", borderRadius: "8px" }}>
-          <TextField fullWidth label="Farm Name" value={farmData.name} onChange={(e) => setFarmData({ ...farmData, name: e.target.value })} required sx={{ mb: 2 }} />
-          <TextField fullWidth label="Address" value={farmData.address} onChange={(e) => setFarmData({ ...farmData, address: e.target.value })} required sx={{ mb: 2 }} />
-          <TextField fullWidth label="City" value={farmData.city} onChange={(e) => setFarmData({ ...farmData, city: e.target.value })} required sx={{ mb: 2 }} />
-          <TextField fullWidth label="State" value={farmData.state} onChange={(e) => setFarmData({ ...farmData, state: e.target.value })} required sx={{ mb: 2 }} />
-          <TextField fullWidth label="Country" value={farmData.country} onChange={(e) => setFarmData({ ...farmData, country: e.target.value })} required sx={{ mb: 2 }} />
-          <TextField fullWidth label="Zip" value={farmData.zip} onChange={(e) => setFarmData({ ...farmData, zip: e.target.value })} required sx={{ mb: 2 }} />
-          <TextField fullWidth label="Number Of Ponds" type="number" value={farmData.number_of_ponds} onChange={(e) => setFarmData({ ...farmData, number_of_ponds: e.target.value })} required sx={{ mb: 2 }} />
-          <TextField fullWidth label="Number Of Workers" type="number" value={farmData.number_of_workers} onChange={(e) => setFarmData({ ...farmData, number_of_workers: e.target.value })} required sx={{ mb: 2 }} />
-          <Button variant="contained" type="submit">{selectedFarm ? "Update Farm" : "Add Farm"}</Button>
-        </Box>
+        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+          <Typography variant="h6" gutterBottom>
+            {selectedFarm ? "Edit Farm" : "Add New Farm"}
+          </Typography>
+          <Box component="form" onSubmit={handleFarmSubmit}>
+            <Grid container spacing={2}>
+              {[
+                { label: "Farm Name", name: "name" },
+                { label: "Address", name: "address" },
+                { label: "City", name: "city" },
+                { label: "State", name: "state" },
+                { label: "Country", name: "country" },
+                { label: "Zip", name: "zip" },
+                { label: "Number Of Ponds", name: "number_of_ponds", type: "number" },
+                { label: "Number Of Workers", name: "number_of_workers", type: "number" },
+              ].map(({ label, name, type = "text" }) => (
+                <Grid item xs={12} sm={6} key={name}>
+                  <TextField
+                    fullWidth
+                    label={label}
+                    name={name}
+                    value={farmData[name]}
+                    onChange={handleChange}
+                    required
+                    type={type}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+
+            <Box mt={3}>
+              <Button type="submit" variant="contained" sx={{ mr: 2 }}>
+                {selectedFarm ? "Update" : "Create"}
+              </Button>
+              <Button onClick={resetForm} variant="outlined" color="secondary">
+                Cancel
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
       )}
 
-      <Typography variant="h5" mt={3}>Farms</Typography>
-      {farms.length > 0 ? (
-        farms.map(farm => (
-          <Box key={farm.id} p={2} mt={2} sx={{ border: "1px solid gray", borderRadius: "8px", cursor: "pointer" }}>
-            <Typography variant="h6">{farm.name}</Typography>
-            <Typography variant="body2">Location: {farm.city}, {farm.state}</Typography>
-            <Typography variant="body2">Ponds: {farm.number_of_ponds}</Typography>
-            <Button variant="outlined" onClick={() => { setSelectedFarm(farm.id); setFarmData(farm); setShowFarmForm(true); }} sx={{ mt: 1, mr: 1 }}>Edit</Button>
-            <Button variant="outlined" color="error" onClick={() => handleDeleteFarm(farm.id)} sx={{ mt: 1 }}>Delete</Button>
-            <Button variant="outlined" color="primary" onClick={() => navigate(`/farm/farmdetails/${farm.id}`)} sx={{ mt: 1 }}>
-              View Details
-            </Button>
-          </Box>
-        ))
+      <Typography variant="h5" gutterBottom>
+        All Farms
+      </Typography>
+
+      {farms.length ? (
+        <Grid container spacing={2}>
+          {farms.map((farm) => (
+            <Grid item xs={12} sm={6} md={4} key={farm.id}>
+              <Paper elevation={2} sx={{ p: 2 }}>
+                <Typography variant="h6">{farm.name}</Typography>
+                <Typography variant="body2">
+                  {farm.city}, {farm.state}
+                </Typography>
+                <Typography variant="body2">
+                  Ponds: {farm.number_of_ponds}, Workers: {farm.number_of_workers}
+                </Typography>
+
+                <Box mt={2} display="flex" flexWrap="wrap" gap={1}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      setSelectedFarm(farm.id);
+                      setFarmData(farm);
+                      setShowFarmForm(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => handleDeleteFarm(farm.id)}
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => navigate(`/farm/farmdetails/${farm.id}`)}
+                  >
+                    View Details
+                  </Button>
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
       ) : (
-        <Typography variant="body1" mt={2}>No farms available</Typography>
+        <Typography mt={2}>No farms available.</Typography>
       )}
     </Box>
   );
