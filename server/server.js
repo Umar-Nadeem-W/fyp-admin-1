@@ -26,56 +26,219 @@ db.connect((err) => {
   }
 });
 
-// Add a new farm owner
-app.post("/api/farm_owners", (req, res) => {
-  const { user_id, status, number_of_farms } = req.body;
 
-  if (!user_id || number_of_farms < 1) {
-    return res.status(400).json({ error: "User ID and valid number of farms are required." });
-  }
-
-  const sql =
-    "INSERT INTO farm_owner (user_id, number_of_farms, farms_added, status, registration_date) VALUES (?, ?, 0, ?, NOW())";
-
-  db.query(sql, [user_id, number_of_farms, status || "Active"], (err, result) => {
+// GET all farm owners
+app.get("/api/farm_owners", (req, res) => {
+  const query = "SELECT * FROM farm_owner";
+  db.query(query, (err, results) => {
     if (err) {
-      console.error("Error adding farm owner:", err);
-      return res.status(500).json({ error: "Database error." });
+      console.error("Error fetching farm owners:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
-    res.status(201).json({ message: "Farm owner added successfully", id: result.insertId });
+    res.json(results);
   });
 });
 
-// Get all farm owners
-app.get("/api/farm_owners", (req, res) => {
-  db.query("SELECT * FROM farm_owner WHERE status = 'Active'", (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: "Database error." });
+// GET a single farm owner
+app.get("/api/farm_owners/:id", (req, res) => {
+  const query = "SELECT * FROM farm_owner WHERE id = ?";
+  db.query(query, [req.params.id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Internal server error" });
+    if (results.length === 0) return res.status(404).json({ error: "Farm owner not found" });
+    res.json(results[0]);
+  });
+});
+
+// CREATE a farm owner
+app.post("/api/farm_owners", (req, res) => {
+  const { owner_name, user_id, number_of_farms, status } = req.body;
+  const registration_date = new Date();
+
+  const query =
+    "INSERT INTO farm_owner (user_id, number_of_farms, status, registration_date, owner_name) VALUES (?, ?, ?, ?, ?)";
+  db.query(
+    query,
+    [owner_name, user_id, number_of_farms, status, registration_date],
+    (err, result) => {
+      if (err) {
+        console.error("Error creating farm owner:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      res.status(201).json({ id: result.insertId, ...req.body, registration_date });
     }
-    res.status(200).json(results);
+  );
+});
+
+// UPDATE a farm owner
+app.put("/api/farm_owners/:id", (req, res) => {
+  const { owner_name, user_id, number_of_farms, status } = req.body;
+
+  const query =
+    "UPDATE farm_owner SET owner_name = ?, user_id = ?, number_of_farms = ?, status = ? WHERE id = ?";
+  db.query(
+    query,
+    [owner_name, user_id, number_of_farms, status, req.params.id],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating farm owner:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      res.json({ message: "Farm owner updated successfully" });
+    }
+  );
+});
+
+// DELETE a farm owner
+app.delete("/api/farm_owners/:id", (req, res) => {
+  const query = "DELETE FROM farm_owner WHERE id = ?";
+  db.query(query, [req.params.id], (err, result) => {
+    if (err) {
+      console.error("Error deleting farm owner:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.json({ message: "Farm owner deleted successfully" });
   });
 });
 
 // Get all farms
 app.get("/api/farms", (req, res) => {
-  const owner_id = req.query.owner_id;
-  let sql = "SELECT * FROM farm";
-  let params = [];
+  const sql = `
+    SELECT 
+      f.id, f.owner_id, f.name, f.address, f.city, f.state, f.country, f.zip, 
+      f.number_of_ponds, f.number_of_workers,
+      o.owner_name AS owner_name
+    FROM farm f
+    JOIN farm_owner o ON f.owner_id = o.id
+  `;
 
-  // If owner_id is provided, filter farms by owner
-  if (owner_id) {
-    sql += " WHERE owner_id = ?";
-    params.push(owner_id);
-  }
-
-  db.query(sql, params, (err, results) => {
+  db.query(sql, (err, results) => {
     if (err) {
-      console.error("Error fetching farms:", err);
-      return res.status(500).json({ error: "Database error." });
+      console.error("Error fetching farms with owner names:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
-    res.status(200).json(results);
+    res.json(results);
   });
 });
+
+
+// GET all employees with employee name from user table
+app.get("/api/employee", (req, res) => {
+  const sql = `
+    SELECT 
+      e.*, user_name AS employee_name
+    FROM employee e
+    JOIN user u ON e.u_id = u.id
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching employees:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.json(results);
+  });
+});
+
+
+// GET one employee
+app.get("/api/employee/:id", (req, res) => {
+  db.query("SELECT * FROM employee WHERE e_id = ?", [req.params.id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Internal error" });
+    if (results.length === 0) return res.status(404).json({ error: "Employee not found" });
+    res.json(results[0]);
+  });
+});
+
+// CREATE employee
+app.post("/api/employee", (req, res) => {
+  const {
+    u_id,
+    status,
+    designation,
+    manage_devices,
+    send_announcement,
+    manage_users,
+    can_see_complaints,
+  } = req.body;
+
+  const sql = `
+    INSERT INTO employee 
+    (u_id, status, designation, manage_devices, send_announcement, manage_users, can_see_complaints)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  db.query(
+    sql,
+    [
+      u_id,
+      status,
+      designation,
+      !!manage_devices,
+      !!send_announcement,
+      !!manage_users,
+      !!can_see_complaints,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error adding employee:", err);
+        return res.status(500).json({ error: "Error inserting employee" });
+      }
+      res.status(201).json({ message: "Employee created", id: result.insertId });
+    }
+  );
+});
+
+// UPDATE employee
+app.put("/api/employee/:id", (req, res) => {
+  const {
+    u_id,
+    status,
+    designation,
+    manage_devices,
+    send_announcement,
+    manage_users,
+    can_see_complaints,
+  } = req.body;
+
+  const sql = `
+    UPDATE employee SET 
+    u_id = ?, status = ?, designation = ?, 
+    manage_devices = ?, send_announcement = ?, 
+    manage_users = ?, can_see_complaints = ?
+    WHERE e_id = ?
+  `;
+  db.query(
+    sql,
+    [
+      u_id,
+      status,
+      designation,
+      !!manage_devices,
+      !!send_announcement,
+      !!manage_users,
+      !!can_see_complaints,
+      req.params.id,
+    ],
+    (err) => {
+      if (err) {
+        console.error("Error updating employee:", err);
+        return res.status(500).json({ error: "Error updating employee" });
+      }
+      res.json({ message: "Employee updated" });
+    }
+  );
+});
+
+// DELETE employee
+app.delete("/api/employee/:id", (req, res) => {
+  db.query("DELETE FROM employee WHERE e_id = ?", [req.params.id], (err) => {
+    if (err) {
+      console.error("Error deleting employee:", err);
+      return res.status(500).json({ error: "Error deleting employee" });
+    }
+    res.json({ message: "Employee deleted" });
+  });
+});
+
 
 // Get a specific farm by ID
 app.get("/api/farms/:id", (req, res) => {

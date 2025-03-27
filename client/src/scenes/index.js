@@ -4,9 +4,12 @@
 import Layout from "./layout";
 import Dashboard from "./dashboard";
 import AllFarms from "./farm/[all-farms]";
+import FarmOwner from "./farm/[farmOwners]"
+import EmployeeInfo from "./employee/[employee-info]";
+import AddEmployee from "./employee/[add-employee]";
 import Workers from "./workers";
 import Transactions from "./transactions";
-import Geography from "./geography";
+import Geography from "./employee";
 import Overview from "./overview";
 import Daily from "./daily";
 import Monthly from "./monthly";
@@ -41,4 +44,7 @@ export {
   PondDetails,
   PondListPage,
   AllFarms,
+  FarmOwner,
+  EmployeeInfo,
+  AddEmployee
 };

@@ -15,21 +15,19 @@ import {
   TableHead,
   TableRow,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    List,
-    ListItem,
-    ListItemText,
-  } from "@mui/material";
-  
 import { Edit, Delete, Visibility, Add } from "@mui/icons-material";
 import axios from "axios";
 
 const initialFarmState = {
+  owner_id: "",
   name: "",
   address: "",
   city: "",
@@ -45,7 +43,7 @@ const FarmManagement = () => {
   const [selectedFarm, setSelectedFarm] = useState(null);
   const [showFarmForm, setShowFarmForm] = useState(false);
   const [farmData, setFarmData] = useState(initialFarmState);
-  const [viewFarm, setViewFarm] = useState(null); // holds the selected farm for viewing
+  const [viewFarm, setViewFarm] = useState(null);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -66,13 +64,13 @@ const FarmManagement = () => {
   const handleFarmSubmit = async (e) => {
     e.preventDefault();
     try {
+      const farmPayload = { ...farmData };
+      delete farmPayload.owner_name; // don't send extra fields to backend
+
       if (selectedFarm) {
-        await axios.put(
-          `http://localhost:5000/api/farms/${selectedFarm}`,
-          farmData
-        );
+        await axios.put(`http://localhost:5000/api/farms/${selectedFarm}`, farmPayload);
       } else {
-        await axios.post("http://localhost:5000/api/farms", farmData);
+        await axios.post("http://localhost:5000/api/farms", farmPayload);
       }
       fetchFarms();
       resetForm();
@@ -132,6 +130,7 @@ const FarmManagement = () => {
           <Box component="form" onSubmit={handleFarmSubmit}>
             <Grid container spacing={2}>
               {[
+                { label: "Owner ID", name: "owner_id", type: "number" },
                 { label: "Farm Name", name: "name" },
                 { label: "Address", name: "address" },
                 { label: "City", name: "city" },
@@ -185,7 +184,8 @@ const FarmManagement = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Farm ID</TableCell>
-                <TableCell>Name</TableCell>
+                <TableCell>Farm Name</TableCell>
+                <TableCell>Owner Name</TableCell>
                 <TableCell>City</TableCell>
                 <TableCell>State</TableCell>
                 <TableCell>Ponds</TableCell>
@@ -198,18 +198,20 @@ const FarmManagement = () => {
                 <TableRow key={farm.id} hover>
                   <TableCell>{farm.id}</TableCell>
                   <TableCell>{farm.name}</TableCell>
+                  <TableCell>{farm.owner_name || "N/A"}</TableCell>
                   <TableCell>{farm.city}</TableCell>
                   <TableCell>{farm.state}</TableCell>
                   <TableCell>{farm.number_of_ponds}</TableCell>
                   <TableCell>{farm.number_of_workers}</TableCell>
                   <TableCell align="right">
                     <IconButton onClick={() => handleViewFarm(farm)}>
-                    <Visibility />
+                      <Visibility />
                     </IconButton>
                     <IconButton
                       onClick={() => {
                         setSelectedFarm(farm.id);
-                        setFarmData(farm);
+                        const { owner_name, ...editableData } = farm;
+                        setFarmData(editableData);
                         setShowFarmForm(true);
                       }}
                     >
@@ -230,47 +232,51 @@ const FarmManagement = () => {
       ) : (
         <Typography mt={2}>No farms available.</Typography>
       )}
+
       <Dialog open={!!viewFarm} onClose={() => setViewFarm(null)} maxWidth="sm" fullWidth>
         <DialogTitle>Farm Details</DialogTitle>
         <DialogContent dividers>
-        {viewFarm && (
-        <List>
-            <ListItem>
-              <ListItemText primary="Farm ID" secondary={viewFarm.id} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Name" secondary={viewFarm.name} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Address" secondary={viewFarm.address} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="City" secondary={viewFarm.city} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="State" secondary={viewFarm.state} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Country" secondary={viewFarm.country} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Zip Code" secondary={viewFarm.zip} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Number of Ponds" secondary={viewFarm.number_of_ponds} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Number of Workers" secondary={viewFarm.number_of_workers} />
-            </ListItem>
-        </List>
-    )}
-    </DialogContent>
+          {viewFarm && (
+            <List>
+              <ListItem>
+                <ListItemText primary="Farm ID" secondary={viewFarm.id} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Name" secondary={viewFarm.name} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Owner Name" secondary={viewFarm.owner_name || "N/A"} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Address" secondary={viewFarm.address} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="City" secondary={viewFarm.city} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="State" secondary={viewFarm.state} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Country" secondary={viewFarm.country} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Zip Code" secondary={viewFarm.zip} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Number of Ponds" secondary={viewFarm.number_of_ponds} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Number of Workers" secondary={viewFarm.number_of_workers} />
+              </ListItem>
+            </List>
+          )}
+        </DialogContent>
         <DialogActions>
-        <Button onClick={() => setViewFarm(null)} variant="contained" color="primary">
-          Close
-        </Button>
+          <Button onClick={() => setViewFarm(null)} variant="contained" color="primary">
+            Close
+          </Button>
         </DialogActions>
-        </Dialog>
+      </Dialog>
     </Box>
   );
 };

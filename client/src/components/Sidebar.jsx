@@ -19,13 +19,14 @@ import {
   ChevronLeft,
   ChevronRightOutlined,
   HomeOutlined,
-  ShoppingCartOutlined,
   Groups2Outlined,
   AssignmentOutlined,
   BarChart,
   Campaign,
   Report,
   Sms,
+  AccountCircleOutlined,
+  WavesOutlined,
 } from "@mui/icons-material";
 
 import { FlexBetween } from ".";
@@ -61,10 +62,18 @@ const navItems = [
   },
   {
     text: "Farms",
-    icon: <ShoppingCartOutlined />,
+    icon: <WavesOutlined />,
     children: [
       { text: "Farm Owners", path: "farmsOwners" },
       { text: "All Farms", path: "all-farms" },
+    ],
+  },
+  {
+    text: "Employee",
+    icon: <AccountCircleOutlined />,
+    children: [
+      { text: "Employee Info", path: "employee-info" },
+      { text: "Add Employee", path: "add-employee" },
     ],
   },
   {

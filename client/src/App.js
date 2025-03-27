@@ -27,7 +27,10 @@ import {
   Communications,
   PondDetails,
   PondListPage,
-  AllFarms
+  AllFarms,
+  FarmOwner,
+  EmployeeInfo,
+  AddEmployee
 } from "scenes";
 
 // App
@@ -49,6 +52,9 @@ const App = () => {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/all-farms" element={<AllFarms />} />
+              <Route path="/farmsOwners" element={<FarmOwner />} />
+              <Route path="/employee-info" element={<EmployeeInfo />} />
+              <Route path="/add-employee" element={<AddEmployee />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/workers" element={<Workers />} />
               <Route path="/pond" element={<PondListPage/>} />
