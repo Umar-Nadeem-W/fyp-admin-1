@@ -20,11 +20,9 @@ import {
   Search,
   SettingsOutlined,
   ArrowDropDownOutlined,
-  GitHub,
 } from "@mui/icons-material";
 
 import { FlexBetween } from ".";
-import profileImage from "assets/profile.jpeg";
 
 // Navbar
 const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
@@ -78,7 +76,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
         {/* Right Side */}
         <FlexBetween gap="1.5rem">
           {/* Source Code */}
-          <IconButton
+          {/* <IconButton
             onClick={() =>
               window.open(
                 "http://www.github.com/sanidhyy/mern-admin/",
@@ -88,7 +86,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
             title="Source Code"
           >
             <GitHub sx={{ fontSize: "25px" }} />
-          </IconButton>
+          </IconButton> */}
 
           {/* Dark/Light Mode */}
           <IconButton onClick={() => dispatch(setMode())} title="Dark Mode">
@@ -120,7 +118,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               <Box
                 component="img"
                 alt="profile"
-                src={profileImage}
+                src={""}
                 height="32px"
                 width="32px"
                 borderRadius="50%"

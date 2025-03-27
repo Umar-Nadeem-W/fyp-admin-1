@@ -12,6 +12,7 @@ import {
   ListItemText,
   Typography,
   useTheme,
+  Collapse
 } from "@mui/material";
 import {
   SettingsOutlined,
@@ -20,14 +21,6 @@ import {
   HomeOutlined,
   ShoppingCartOutlined,
   Groups2Outlined,
-  ReceiptLongOutlined,
-  PublicOutlined,
-  PointOfSaleOutlined,
-  TodayOutlined,
-  CalendarMonthOutlined,
-  AdminPanelSettingsOutlined,
-  TrendingUpOutlined,
-  PieChartOutlined,
   AssignmentOutlined,
   BarChart,
   Campaign,
@@ -36,19 +29,11 @@ import {
 } from "@mui/icons-material";
 
 import { FlexBetween } from ".";
-import profileImage from "assets/profile.jpeg";
-import { Speaker } from "lucide-react";
-import { Bar } from "@nivo/bar";
-
 // Nav items
 const navItems = [
   {
     text: "Dashboard",
     icon: <HomeOutlined />,
-  },
-  {
-    text: "Tasks",
-    icon: <AssignmentOutlined/>,
   },
   {
     text: "Reports",
@@ -67,61 +52,34 @@ const navItems = [
     icon: <BarChart />,
   },
   {
-    text: "Client Facing",
-    icon: null,
+    text: "Farm Owner",
+    icon: <Groups2Outlined />,
+    children: [
+      { text: "Owner Profile", path: "owner-profile" },
+      { text: "Owner Settings", path: "owner-settings" },
+    ],
   },
   {
-    text: "Farm",
+    text: "Farms",
     icon: <ShoppingCartOutlined />,
+    children: [
+      { text: "Farm Owners", path: "farmsOwners" },
+      { text: "All Farms", path: "all-farms" },
+    ],
   },
   {
     text: "Workers",
     icon: <Groups2Outlined />,
   },
   {
-    text: "Transactions",
-    icon: <ReceiptLongOutlined />,
-  },
-  {
-    text: "Geography",
-    icon: <PublicOutlined />,
-  },
-  {
-    text: "Sales",
-    icon: null,
-  },
-  {
-    text: "Overview",
-    icon: <PointOfSaleOutlined />,
-  },
-  {
-    text: "Daily",
-    icon: <TodayOutlined />,
-  },
-  {
-    text: "Monthly",
-    icon: <CalendarMonthOutlined />,
-  },
-  {
-    text: "Breakdown",
-    icon: <PieChartOutlined />,
-  },
-  {
-    text: "Management",
-    icon: null,
-  },
-  {
-    text: "Admin",
-    icon: <AdminPanelSettingsOutlined />,
-  },
-  {
-    text: "Performance",
-    icon: <TrendingUpOutlined />,
+    text: "Tasks",
+    icon: <AssignmentOutlined/>,
   },
 ];
 
 // Sidebar
 const Sidebar = ({
+
   user,
   isNonMobile,
   drawerWidth,
@@ -129,11 +87,17 @@ const Sidebar = ({
   setIsSidebarOpen,
 }) => {
   // config
+  const [openDropdowns, setOpenDropdowns] = useState({});
   const { pathname } = useLocation();
   const [active, setActive] = useState("");
   const navigate = useNavigate();
   const theme = useTheme();
-
+  const toggleDropdown = (menu) => {
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
+  };
   // set active path
   useEffect(() => {
     setActive(pathname.substring(1));
@@ -163,7 +127,6 @@ const Sidebar = ({
           }}
         >
 
-            <Box width="100%">
             {/* Brand Info */}
             <Box m="1.5rem 2rem 2rem 3rem">
               <FlexBetween color={theme.palette.secondary.main}>
@@ -178,9 +141,9 @@ const Sidebar = ({
                     sx={{
                       cursor: "pointer",
                     }}
-                    title="ECOMVISION"
+                    title="MACHIRO"
                   >
-                    ECOMVISION
+                    Machiro
                   </Typography>
                 </Box>
                 {/* Mobile Sidebar Toggle Icon */}
@@ -197,60 +160,91 @@ const Sidebar = ({
             
             {/* Sidebar items */}
             <List>
-              {navItems.map(({ text, icon }) => {
-                if (!icon) {
-                  return (
-                    <Typography key={text} sx={{ m: "2.25rem 0 1rem 3rem" }}>
-                      {text}
-                    </Typography>
-                  );
-                }
+  {navItems.map(({ text, icon, children }) => {
+    const lcText = text.toLowerCase();
 
-                // lowercase text
-                const lcText = text.toLowerCase();
+    if (children) {
+      return (
+        <Box key={text}>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => toggleDropdown(lcText)}>
+              <ListItemIcon sx={{ ml: "2rem", color: theme.palette.secondary[200] }}>
+                {icon}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+              {openDropdowns[lcText] ? <ChevronLeft /> : <ChevronRightOutlined />}
+            </ListItemButton>
+          </ListItem>
 
+          <Collapse in={openDropdowns[lcText]} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {children.map((child) => {
+                const childPath = child.path;
                 return (
-                  <ListItem key={text} title={text} disablePadding>
+                  <ListItem key={child.text} disablePadding sx={{ pl: 4 }}>
                     <ListItemButton
                       onClick={() => {
-                        navigate(`/${lcText}`);
-                        setActive(lcText);
+                        navigate(`/${childPath}`);
+                        setActive(childPath);
                       }}
                       sx={{
                         backgroundColor:
-                          active === lcText
+                          active === childPath
                             ? theme.palette.secondary[300]
                             : "transparent",
                         color:
-                          active === lcText
+                          active === childPath
                             ? theme.palette.primary[600]
                             : theme.palette.secondary[100],
                       }}
                     >
-                      {/* icon */}
-                      <ListItemIcon
-                        sx={{
-                          ml: "2rem",
-                          color:
-                            active === lcText
-                              ? theme.palette.primary[600]
-                              : theme.palette.secondary[200],
-                        }}
-                      >
-                        {icon}
-                      </ListItemIcon>
-
-                      {/* text */}
-                      <ListItemText primary={text} />
-                      {active === lcText && (
-                        <ChevronRightOutlined sx={{ ml: "auto" }} />
-                      )}
+                      <ListItemText primary={child.text} />
                     </ListItemButton>
                   </ListItem>
                 );
               })}
             </List>
-          </Box>
+          </Collapse>
+        </Box>
+      );
+    }
+
+    return (
+      <ListItem key={text} disablePadding>
+        <ListItemButton
+          onClick={() => {
+            navigate(`/${lcText}`);
+            setActive(lcText);
+          }}
+          sx={{
+            backgroundColor:
+              active === lcText
+                ? theme.palette.secondary[300]
+                : "transparent",
+            color:
+              active === lcText
+                ? theme.palette.primary[600]
+                : theme.palette.secondary[100],
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              ml: "2rem",
+              color:
+                active === lcText
+                  ? theme.palette.primary[600]
+                  : theme.palette.secondary[200],
+            }}
+          >
+            {icon}
+          </ListItemIcon>
+          <ListItemText primary={text} />
+          {active === lcText && <ChevronRightOutlined sx={{ ml: "auto" }} />}
+        </ListItemButton>
+      </ListItem>
+    );
+  })}
+</List>
 
           {/* User */}
           <Box pb="1rem">
@@ -259,7 +253,7 @@ const Sidebar = ({
               <Box
                 component="img"
                 alt="profile"
-                src={profileImage}
+                src={""}
                 height="40px"
                 width="40px"
                 borderRadius="50%"

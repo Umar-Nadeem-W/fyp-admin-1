@@ -135,6 +135,27 @@ app.post("/api/farms", (req, res) => {
   });
 });
 
+// Example using Express
+app.get("/api/tasks", async (req, res) => {
+  const query = `
+    SELECT t.*, tc.Task_category as task_category
+    FROM task t
+    JOIN task_category tc ON t.tk_id = tc.id
+  `;
+  const [rows] = await db.query(query); // Use your DB connection
+  res.json(rows);
+});
+
+
+app.get('/api/farms/:id/ponds', (req, res) => {
+  const farmId = req.params.id;
+  db.query('SELECT * FROM pond WHERE farm_id = ?', [farmId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+
 app.get("/api/workers", (req, res) => {
   const query = "SELECT * FROM farm_worker";
   db.query(query, (err, results) => {

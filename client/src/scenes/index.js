@@ -3,7 +3,7 @@
 
 import Layout from "./layout";
 import Dashboard from "./dashboard";
-import Farm from "./farm";
+import AllFarms from "./farm/[all-farms]";
 import Workers from "./workers";
 import Transactions from "./transactions";
 import Geography from "./geography";
@@ -18,13 +18,12 @@ import Analytics from "./analytics";
 import Reports from "./reports";
 import Announcements from "./announcements";
 import Communications from "./communications";
-import FarmDetails from "./farm/[farmdetails]";
-
+import PondDetails from "./pond/[ponddetails]";
+import PondListPage from "./pond";
 // export scenes
 export {
   Layout,
   Dashboard,
-  Farm,
   Workers,
   Transactions,
   Geography,
@@ -39,6 +38,7 @@ export {
   Reports,
   Announcements,
   Communications,
-  FarmDetails
-  
+  PondDetails,
+  PondListPage,
+  AllFarms,
 };

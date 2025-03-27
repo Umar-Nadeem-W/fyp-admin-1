@@ -3,7 +3,6 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
 // Theme
 import { themeSettings } from "theme";
 
@@ -13,7 +12,6 @@ import {
   Tasks,
   Layout,
   Dashboard,
-  Farm,
   Workers,
   Transactions,
   Geography,
@@ -27,7 +25,9 @@ import {
   Reports,
   Announcements, 
   Communications,
-  FarmDetails
+  PondDetails,
+  PondListPage,
+  AllFarms
 } from "scenes";
 
 // App
@@ -48,10 +48,11 @@ const App = () => {
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/farm" element={<Farm />} />
+              <Route path="/all-farms" element={<AllFarms />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/workers" element={<Workers />} />
-              <Route path="/farm/farmdetails/:farmId" element={<FarmDetails />} />
+              <Route path="/pond" element={<PondListPage/>} />
+              <Route path="/pond/ponddetails/:PondId" element={<PondDetails />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/geography" element={<Geography />} />
               <Route path="/overview" element={<Overview />} />

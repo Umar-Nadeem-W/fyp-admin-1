@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-const FarmDetails = () => {
+const PondDetails = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -134,4 +134,4 @@ const FarmDetails = () => {
   );
 };
 
-export default FarmDetails;
+export default PondDetails;
