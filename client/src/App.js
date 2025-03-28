@@ -30,7 +30,9 @@ import {
   AllFarms,
   FarmOwner,
   EmployeeInfo,
-  AddEmployee
+  AddEmployee,
+  ServicePlans,
+  AddPlan
 } from "scenes";
 
 // App
@@ -55,6 +57,8 @@ const App = () => {
               <Route path="/farmsOwners" element={<FarmOwner />} />
               <Route path="/employee-info" element={<EmployeeInfo />} />
               <Route path="/add-employee" element={<AddEmployee />} />
+              <Route path="/list-plan" element={<ServicePlans />} />
+              <Route path="/add-plan" element={<AddPlan />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/workers" element={<Workers />} />
               <Route path="/pond" element={<PondListPage/>} />

@@ -27,6 +27,7 @@ import {
   Sms,
   AccountCircleOutlined,
   WavesOutlined,
+  CropLandscape,
 } from "@mui/icons-material";
 
 import { FlexBetween } from ".";
@@ -74,6 +75,14 @@ const navItems = [
     children: [
       { text: "Employee Info", path: "employee-info" },
       { text: "Add Employee", path: "add-employee" },
+    ],
+  },
+  {
+    text: "Service Plan",
+    icon: <CropLandscape />,
+    children: [
+      { text: "List Plan", path: "list-plan" },
+      { text: "Add Plan", path: "add-plan" },
     ],
   },
   {

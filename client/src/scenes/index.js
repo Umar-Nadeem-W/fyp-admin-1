@@ -7,6 +7,8 @@ import AllFarms from "./farm/[all-farms]";
 import FarmOwner from "./farm/[farmOwners]"
 import EmployeeInfo from "./employee/[employee-info]";
 import AddEmployee from "./employee/[add-employee]";
+import ServicePlans from "./serviceplan/[list-plan]";
+import AddPlan from "./serviceplan/[add-plan]";
 import Workers from "./workers";
 import Transactions from "./transactions";
 import Geography from "./employee";
@@ -46,5 +48,7 @@ export {
   AllFarms,
   FarmOwner,
   EmployeeInfo,
-  AddEmployee
+  AddEmployee,
+  ServicePlans,
+  AddPlan
 };

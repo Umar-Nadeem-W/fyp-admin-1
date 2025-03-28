@@ -120,6 +120,67 @@ app.get("/api/farms", (req, res) => {
   });
 });
 
+// GET all packages
+app.get("/api/packages", (req, res) => {
+  db.query("SELECT * FROM packages", (err, results) => {
+    if (err) return res.status(500).json({ error: "Error fetching packages" });
+    res.json(results);
+  });
+});
+
+// CREATE package
+app.post("/api/packages", (req, res) => {
+  const { name, description, price, duration, max_sites, max_ponds, max_workers } = req.body;
+
+  if (!name || !price || !duration) {
+    return res.status(400).json({ error: "Required fields missing" });
+  }
+
+  const sql = `
+    INSERT INTO packages (name, description, price, duration, max_sites, max_ponds, max_workers)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(
+    sql,
+    [name, description, price, duration, max_sites, max_ponds, max_workers],
+    (err, result) => {
+      if (err) {
+        console.error("DB Insert Error:", err);
+        return res.status(500).json({ error: "Insert failed" });
+      }
+      res.status(201).json({ id: result.insertId });
+    }
+  );
+});
+
+// UPDATE package
+app.put("/api/packages/:id", (req, res) => {
+  const { name, description, price, duration, max_sites, max_ponds, max_workers } = req.body;
+  const sql = `
+    UPDATE packages SET name=?, description=?, price=?, duration=?, max_sites=?, max_ponds=?, max_workers=?
+    WHERE id=?
+  `;
+  db.query(
+    sql,
+    [name, description, price, duration, max_sites, max_ponds, max_workers, req.params.id],
+    (err) => {
+      if (err) return res.status(500).json({ error: "Update failed" });
+      res.json({ message: "Package updated" });
+    }
+  );
+});
+
+// DELETE package
+app.delete("/api/packages/:id", (req, res) => {
+  db.query("DELETE FROM packages WHERE id = ?", [req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: "Delete failed" });
+    res.json({ message: "Package deleted" });
+  });
+});
+
+
+
 
 // GET all employees with employee name from user table
 app.get("/api/employee", (req, res) => {
