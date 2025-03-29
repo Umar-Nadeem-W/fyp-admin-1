@@ -38,53 +38,10 @@ const navItems = [
     icon: <HomeOutlined />,
   },
   {
-    text: "Reports",
-    icon: <Report />,
-  },
-  {
-    text:"Communications",
-    icon:<Sms/>
-  },
-  {
-    text: "Announcements",
-    icon :<Campaign/>
-  },
-  {
-    text: "Analytics",
-    icon: <BarChart />,
-  },
-  {
-    text: "Farm Owner",
-    icon: <Groups2Outlined />,
-    children: [
-      { text: "Owner Profile", path: "owner-profile" },
-      { text: "Owner Settings", path: "owner-settings" },
-    ],
-  },
-  {
     text: "Farms",
     icon: <WavesOutlined />,
-    children: [
-      { text: "Farm Owners", path: "farmsOwners" },
-      { text: "All Farms", path: "all-farms" },
-    ],
   },
-  {
-    text: "Employee",
-    icon: <AccountCircleOutlined />,
-    children: [
-      { text: "Employee Info", path: "employee-info" },
-      { text: "Add Employee", path: "add-employee" },
-    ],
-  },
-  {
-    text: "Service Plan",
-    icon: <CropLandscape />,
-    children: [
-      { text: "List Plan", path: "list-plan" },
-      { text: "Add Plan", path: "add-plan" },
-    ],
-  },
+  
   {
     text: "Workers",
     icon: <Groups2Outlined />,
@@ -93,6 +50,7 @@ const navItems = [
     text: "Tasks",
     icon: <AssignmentOutlined/>,
   },
+
 ];
 
 // Sidebar

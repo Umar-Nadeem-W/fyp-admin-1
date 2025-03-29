@@ -8,32 +8,13 @@ import { themeSettings } from "theme";
 
 // Scenes
 import {
-
+  Workers,
   Tasks,
   Layout,
-  Dashboard,
-  Workers,
-  Transactions,
-  Geography,
-  Overview,
-  Daily,
-  Monthly,
-  Breakdown,
-  Admin,
-  Performance,
-  Analytics,
-  Reports,
-  Announcements, 
-  Communications,
-  PondDetails,
-  PondListPage,
   AllFarms,
-  FarmOwner,
-  EmployeeInfo,
-  AddEmployee,
-  ServicePlans,
-  AddPlan
-} from "scenes";
+  Dashboard
+
+} from "scenes/umarscenes";
 
 // App
 const App = () => {
@@ -53,15 +34,16 @@ const App = () => {
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/all-farms" element={<AllFarms />} />
-              <Route path="/farmsOwners" element={<FarmOwner />} />
-              <Route path="/employee-info" element={<EmployeeInfo />} />
-              <Route path="/add-employee" element={<AddEmployee />} />
-              <Route path="/list-plan" element={<ServicePlans />} />
-              <Route path="/add-plan" element={<AddPlan />} />
-              <Route path="/reports" element={<Reports />} />
+              <Route path="/farms" element={<AllFarms />} />
+              <Route path="/tasks" element={<Tasks />} />
               <Route path="/workers" element={<Workers />} />
-              <Route path="/pond" element={<PondListPage/>} />
+              {/* <Route path="/farmsOwners" element={<FarmOwner />} /> */}
+              {/* <Route path="/employee-info" element={<EmployeeInfo />} />
+              <Route path="/add-employee" element={<AddEmployee />} />
+              <Route path="/list-plan" element={<ServicePlans />} /> */}
+              {/* <Route path="/add-plan" element={<AddPlan />} />
+              <Route path="/reports" element={<Reports />} /> */}
+              {/* <Route path="/pond" element={<PondListPage/>} />
               <Route path="/pond/ponddetails/:PondId" element={<PondDetails />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/geography" element={<Geography />} />
@@ -74,7 +56,7 @@ const App = () => {
               <Route path ='/announcements' element = {<Announcements/>}/>
               <Route path="/performance" element={<Performance />} />
               <Route path ="/analytics" element={<Analytics/>}></Route>
-              <Route path ="/communications" element={<Communications/>}></Route>
+              <Route path ="/communications" element={<Communications/>}></Route> */}
             </Route>
           </Routes>
         </ThemeProvider>
