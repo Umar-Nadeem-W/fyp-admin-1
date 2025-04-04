@@ -11,9 +11,19 @@ import {
   Workers,
   Tasks,
   Layout,
-  AllFarms,
-  Dashboard
-
+  Dashboard,
+  AddFarm,
+  Farms,
+  Alerts,
+  Installations,
+  Devices,
+  Fish,
+  Ponds,
+  Reports,
+  NewTask,
+  AssignTask,
+  Addpond,
+  AddDevice
 } from "scenes/umarscenes";
 
 // App
@@ -34,9 +44,22 @@ const App = () => {
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/farms" element={<AllFarms />} />
-              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/farms" element={<Farms />} />
+              <Route path="/tasks/view-tasks" element={<Tasks />} />
               <Route path="/workers" element={<Workers />} />
+              <Route path="farms/add-farm" element={<AddFarm />} />
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/installations" element={<Installations />} />
+              <Route path="devices/view-devices" element={<Devices />} />
+              <Route path="/fish" element={<Fish />} />
+              <Route path="ponds/view-ponds" element={<Ponds />} />
+              <Route path="ponds/add-pond" element ={<Addpond/>}/>
+              <Route path="/tools/new-task" element={<NewTask />} />
+              <Route path="/tools/reports" element={<Reports />} />
+              <Route path="/tasks/assign-task" element={<AssignTask />} />
+              <Route path="devices/add-device" element={<AddDevice/>} />
+              {/* <Route path="/tools" element={<Tools />} /> */}
+
               {/* <Route path="/farmsOwners" element={<FarmOwner />} /> */}
               {/* <Route path="/employee-info" element={<EmployeeInfo />} />
               <Route path="/add-employee" element={<AddEmployee />} />

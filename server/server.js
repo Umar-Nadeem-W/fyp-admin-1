@@ -106,8 +106,7 @@ app.get("/api/farms", (req, res) => {
   const sql = `
     SELECT 
       f.id, f.owner_id, f.name, f.address, f.city, f.state, f.country, f.zip, 
-      f.number_of_ponds, f.number_of_workers,
-      o.owner_name AS owner_name
+      f.number_of_ponds, f.number_of_workers
     FROM farm f
     JOIN farm_owner o ON f.owner_id = o.id
   `;
@@ -322,6 +321,7 @@ app.get("/api/farms/:id", (req, res) => {
 
 // Add a new farm with restriction
 app.post("/api/farms", (req, res) => {
+  console.log("Request body:", req.body); 
   const { owner_id, name, address, city, state, country, zip, number_of_ponds, number_of_workers } = req.body;
 
   if (!owner_id || !name || !address || !city || !state || !country || !zip || number_of_ponds < 0 || number_of_workers < 0) {
