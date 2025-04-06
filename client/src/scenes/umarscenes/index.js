@@ -5,17 +5,23 @@ import Dashboard from "./dashboard";
 import Ponds from "./ponds/viewponds";
 import Devices from "./devices/view devices";
 import Tools from "./tools";
-import Installations from "./installations";
 import Farms from "./farms";
 import AddFarm from "./farms/addfarm";
 import Alerts from "./alerts";
-import Fish from "./fish"; 
+import Fish from "./fish/view fish"; 
 import Reports from "./tools/reports";
 import NewTask from "./tools/New Task";
 import AssignTask from "./tasks/assigntask";
 import Addpond from "./ponds/addpond";
 import AddDevice from "./devices/add device";
+import Installations from "./installations/view instalations";
+import AddInstallation from "./installations/add installation";
+import SubscriptionsPage from "./subscriptions";
+import FishDetails from "./fish/fish details";
+import AddFish from "./fish/add fish";
+import { Box } from "@mui/material";
 export {
+    SubscriptionsPage,
     Farms,
     Workers,
     Tasks,
@@ -24,7 +30,9 @@ export {
     Ponds,
     Devices,
     Tools,
+    AddFish,
     Installations,
+    AddInstallation,
     AddFarm,
     Alerts,
     Fish ,
@@ -32,5 +40,7 @@ export {
     Reports,
     Addpond,
     AssignTask,
-    AddDevice // Add other scenes here as needed
+    AddDevice,
+    FishDetails,
+     // Add other scenes here as needed
 }

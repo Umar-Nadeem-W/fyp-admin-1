@@ -22,7 +22,7 @@ import {
   Groups2Outlined,
   AssignmentOutlined,
   WaterOutlined, // Icon for ponds
-  AgricultureOutlined, // Icon for farms
+  Cloud, 
   DeviceHubOutlined, // Icon for devices
   BuildOutlined, // Icon for tools
   FileCopyOutlined, // Icon for reports
@@ -39,6 +39,8 @@ import {
   SetMealOutlined,
   ReportGmailerrorred,
   AddToQueue,
+  Backup,
+  Visibility, 
 } from "@mui/icons-material";
 
 import { FlexBetween } from ".";
@@ -91,7 +93,12 @@ const navItems = [
   },
   {
     text: "Installations",
-    icon: <DownloadOutlined />, // Represents installations or downloads
+    icon: <DownloadOutlined />,
+    children:[
+      { text: "View Installations", path: "installations/view-installations", icon: <Cloud /> }, 
+      { text: "Add Installation", path: "installations/add-installation", icon: <Backup /> },
+
+    ] // Represents installations or downloads
   },
   {
     text: "Tools",
@@ -104,10 +111,6 @@ const navItems = [
   {
     text: "Subscriptions",
     icon: <SubscriptionsOutlined />, // Represents subscription plans
-    children: [
-      { text: "Current", path: "subscriptions/current", icon: <FileCopyOutlined /> }, // Represents current subscriptions
-      { text: "Renew", path: "subscriptions/renew", icon: <Refresh /> }, // Represents renewing subscriptions
-    ],
   },
   {
     text: "Statistics",
@@ -119,7 +122,11 @@ const navItems = [
   },
   {
     text: "Fish",
-    icon: <SetMealOutlined />, // Replacing FishOutlined with EmojiNatureOutlined
+    icon: <SetMealOutlined />,
+    children: [
+      { text: "View Fish", path: "fish/view-fish", icon: <Visibility /> }, // Represents farm insights
+      { text: "Add Fish Stock", path: "fish/add-fish", icon: <AddTaskOutlined /> }, // Represents employee insi
+    ] // Replacing FishOutlined with EmojiNatureOutlined
   },
 ];
 

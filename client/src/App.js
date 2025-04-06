@@ -23,7 +23,11 @@ import {
   NewTask,
   AssignTask,
   Addpond,
-  AddDevice
+  AddDevice,
+  AddInstallation, 
+  SubscriptionsPage, 
+  FishDetails,
+   AddFish
 } from "scenes/umarscenes";
 
 // App
@@ -49,15 +53,19 @@ const App = () => {
               <Route path="/workers" element={<Workers />} />
               <Route path="farms/add-farm" element={<AddFarm />} />
               <Route path="/alerts" element={<Alerts />} />
-              <Route path="/installations" element={<Installations />} />
+              <Route path="/installations/view-installations" element={<Installations />} />
               <Route path="devices/view-devices" element={<Devices />} />
-              <Route path="/fish" element={<Fish />} />
+              <Route path="/fish/view-fish" element={<Fish />} />
               <Route path="ponds/view-ponds" element={<Ponds />} />
               <Route path="ponds/add-pond" element ={<Addpond/>}/>
               <Route path="/tools/new-task" element={<NewTask />} />
               <Route path="/tools/reports" element={<Reports />} />
               <Route path="/tasks/assign-task" element={<AssignTask />} />
               <Route path="devices/add-device" element={<AddDevice/>} />
+              <Route path="/installations/add-installation" element={<AddInstallation/>} />
+              <Route path="/subscriptions" element={<SubscriptionsPage/>} />
+              <Route path="/fish/fish-details" element={<FishDetails/>} />
+              <Route path="/fish/add-fish" element={<AddFish/>} />
               {/* <Route path="/tools" element={<Tools />} /> */}
 
               {/* <Route path="/farmsOwners" element={<FarmOwner />} /> */}
