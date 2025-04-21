@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   DownloadOutlined,
   Email,
@@ -9,78 +9,131 @@ import {
 import {
   Box,
   Button,
-  Typography,
   useTheme,
   useMediaQuery,
+  CircularProgress,
+  Typography,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-
-import { useGetDashboardQuery } from "state/api";
+import { useNavigate } from "react-router-dom";
+import ChartBox from "scenes/dashboard/ChartsSection";
 import {
   FlexBetween,
   Header,
-  BreakdownChart,
-  OverviewChart,
   StatBox,
 } from "components";
+import axios from "axios";
+
+// Set base URL for API requests - adjust this to match your backend URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+axios.defaults.baseURL = API_BASE_URL;
 
 const Dashboard = () => {
-  // theme
+  const navigate = useNavigate();
   const theme = useTheme();
-  // is large desktop screen
   const isNonMediumScreen = useMediaQuery("(min-width: 1200px)");
-  // get data
-  const { data, isLoading } = useGetDashboardQuery();
+  
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // data columns
-  const columns = [
-    {
-      field: "_id",
-      headerName: "ID",
-      flex: 1,
-    },
-    {
-      field: "userId",
-      headerName: "User ID",
-      flex: 0.5,
-    },
-    {
-      field: "createdAt",
-      headerName: "Created At",
-      flex: 1,
-    },
-    {
-      field: "products",
-      headerName: "# of Products",
-      flex: 0.5,
-      sortable: false,
-      renderCell: (params) => params.value.length,
-    },
-    {
-      field: "cost",
-      headerName: "Cost",
-      flex: 1,
-      renderCell: (params) => `$${Number(params.value).toFixed(2)}`,
-    },
-  ];
+  // Move fetchDashboardData outside useEffect so it can be reused in handleRetry
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await axios.get('/api/dashboard');
+      
+      if (response.data) {
+        setDashboardData(response.data);
+      } else {
+        throw new Error('No data received from server');
+      }
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to fetch dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  }, []); // No dependencies needed since it's not using any external state/props
 
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  const handleExportReports = async () => {
+    try {
+      // Request the report from your backend
+      const response = await axios.get('/api/dashboard/export', {
+        responseType: 'blob'
+      });
+      
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `dashboard-report-${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error downloading report:', err);
+      alert('Failed to download report. Please try again later.');
+    }
+  };
+
+  const handleRetry = () => {
+    fetchDashboardData();
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100vh">
+        <Typography variant="h5" color="error" gutterBottom>
+          {error}
+        </Typography>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleRetry}
+          sx={{ mt: 2 }}
+        >
+          Retry
+        </Button>
+      </Box>
+    );
+  }
+  
   return (
     <Box m="1.5rem 2.5rem">
       <FlexBetween>
         {/* Header */}
         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
-
-        {/* Content */}
+  
+        {/* Download Reports */}
         <Box>
-          {/* Download Reports */}
           <Button
+            onClick={handleExportReports}
             sx={{
               backgroundColor: theme.palette.secondary.light,
               color: theme.palette.background.alt,
               fontSize: "14px",
               fontWeight: "bold",
               padding: "10px 20px",
-
+  
               "&:hover": {
                 backgroundColor: theme.palette.background.alt,
                 color: theme.palette.secondary.light,
@@ -92,7 +145,8 @@ const Dashboard = () => {
           </Button>
         </Box>
       </FlexBetween>
-
+  
+      {/* StatBoxes */}
       <Box
         mt="20px"
         display="grid"
@@ -105,136 +159,102 @@ const Dashboard = () => {
           },
         }}
       >
-        {/* ROW 1 */}
-        {/* Total Customers */}
-        <StatBox
-          title="Total Customers"
-          value={data && data.totalCustomers}
-          increase="+14%"
-          description="Since last month"
-          icon={
-            <Email
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-
-        {/* Sales Today */}
-        <StatBox
-          title="Sales Today"
-          value={data && data.todayStats.totalSales}
-          increase="+21%"
-          description="Since last month"
-          icon={
-            <PointOfSale
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-
-        {/* Overview Chart */}
-        <Box
-          gridColumn="span 8"
-          gridRow="span 2"
-          backgroundColor={theme.palette.background.alt}
-          p="1rem"
-          borderRadius="0.55rem"
-        >
-          <OverviewChart view="sales" isDashboard={true} />
+        <Box onClick={() => navigate("/farmsOwners")} sx={{ cursor: "pointer", gridColumn: isNonMediumScreen ? "span 3" : "span 12" }}>
+          <StatBox
+            title="Farm Owner"
+            value={dashboardData?.stats?.totalFarmOwners || 0}
+            description="Since last month"
+            icon={
+              <Email
+                sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
+              />
+            }
+          />
         </Box>
-
-        {/* Monthly Sales */}
-        <StatBox
-          title="Monthly Sales"
-          value={data && data.thisMonthStats.totalSales}
-          increase="+5%"
-          description="Since last month"
-          icon={
-            <PersonAdd
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-
-        {/* Yearly Sales */}
-        <StatBox
-          title="Yearly Sales"
-          value={data && data.yearlySalesTotal}
-          increase="+43%"
-          description="Since last month"
-          icon={
-            <Traffic
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-
-        {/* ROW 2 */}
-        {/* Transactions */}
+        <Box onClick={() => navigate("/all-farms")} sx={{ cursor: "pointer", gridColumn: isNonMediumScreen ? "span 3" : "span 12" }}>
+          <StatBox
+            title="Total Farms"
+            value={dashboardData?.stats?.totalFarms || 0}
+            description="Since last month"
+            icon={
+              <PointOfSale
+                sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
+              />
+            }
+          />
+        </Box>
+        <Box onClick={() => navigate("/employee-info")} sx={{ cursor: "pointer", gridColumn: isNonMediumScreen ? "span 3" : "span 12" }}>
+          <StatBox
+            title="Total Employee"
+            value={dashboardData?.stats?.totalEmployees || 0}
+            description="Since last month"
+            icon={
+              <PersonAdd
+                sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
+              />
+            }
+          />
+        </Box>
+        <Box onClick={() => navigate("/list-plan")} sx={{ cursor: "pointer", gridColumn: isNonMediumScreen ? "span 3" : "span 12" }}>
+          <StatBox
+            title="Service Plan"
+            value={dashboardData?.stats?.totalServicePlans || 0}
+            description="Since last month"
+            icon={
+              <Traffic
+                sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
+              />
+            }
+          />
+        </Box>
+      </Box>
+  
+      {/* Chart Boxes */}
+      {dashboardData?.charts && (
         <Box
-          gridColumn="span 8"
-          gridRow="span 3"
+          mt="20px"
+          display="grid"
+          gridTemplateColumns="repeat(12, 1fr)"
+          gridAutoRows="300px"
+          gap="20px"
           sx={{
-            "& .MuiDataGrid-root": {
-              border: "none",
-              borderRadius: "5rem",
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: theme.palette.background.alt,
-              color: theme.palette.secondary[100],
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              backgroundColor: theme.palette.background.alt,
-            },
-            "& .MuiDataGrid-footerContainer": {
-              backgroundColor: theme.palette.background.alt,
-              color: theme.palette.secondary[100],
-              borderTop: "none",
-            },
-            "& .MuiDataGrid-toolbarContainer .MuiButtom-text": {
-              color: `${theme.palette.secondary[200]} !important`,
+            "& > div": {
+              gridColumn: isNonMediumScreen ? "span 6" : "span 12",
             },
           }}
         >
-          <DataGrid
-            loading={isLoading || !data}
-            getRowId={(row) => row._id}
-            rows={(data && data.transactions) || []}
-            columns={columns}
+          <ChartBox
+            title="Farm Owner Trend"
+            data={dashboardData.charts.farmOwners}
+            dataKey="value"
+            chartType="pie"
+            color="#4caf50"
+          />
+          <ChartBox
+            title="Total Farms Over Time"
+            data={dashboardData.charts.totalFarms}
+            dataKey="value"
+            chartType="pie"
+            color="#2196f3"
+          />
+          <ChartBox
+            title="Employee Growth"
+            data={dashboardData.charts.employees}
+            dataKey="value"
+            chartType="pie"
+            color="#ff9800"
+          />
+          <ChartBox
+            title="Service Plan Adoption"
+            data={dashboardData.charts.servicePlans}
+            dataKey="value"
+            chartType="pie"
+            color="#9c27b0"
           />
         </Box>
-
-        {/* Sales by Category */}
-        <Box
-          gridColumn="span 4"
-          gridRow="span 3"
-          backgroundColor={theme.palette.background.alt}
-          p="1.5rem"
-          borderRadius="0.55rem"
-        >
-          <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-            Sales by Category
-          </Typography>
-
-          <BreakdownChart isDashboard={true} />
-          <Typography
-            p="0 0.6rem"
-            fontSize="0.8rem"
-            sx={{
-              color: theme.palette.secondary[200],
-            }}
-          >
-            Breakdown of real states and information via category for revenue
-            made for this year and total sales
-          </Typography>
-        </Box>
-      </Box>
+      )}
     </Box>
   );
-};
+};  
 
 export default Dashboard;

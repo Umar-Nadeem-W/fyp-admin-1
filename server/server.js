@@ -1,21 +1,21 @@
-require("dotenv").config();
 const express = require("express");
-const mysql = require("mysql2");
+const mysql = require('mysql2');
 const cors = require("cors");
 const bodyParser = require("body-parser");
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
-// MySQL Connection
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "2003",
-  database: "fyp_website",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 db.connect((err) => {
@@ -25,6 +25,94 @@ db.connect((err) => {
     console.log("Connected to MySQL database.");
   }
 });
+
+// GET Dashboard Data
+// GET Dashboard Data (No timestamp fields required)
+// GET Dashboard Data with timestamp trends
+app.get("/api/dashboard", async (req, res) => {
+  try {
+    const getCount = (sql) =>
+      new Promise((resolve, reject) => {
+        db.query(sql, (err, results) => {
+          if (err) reject(err);
+          else resolve(results[0]?.count || 0);
+        });
+      });
+
+    const getTrend = (table, column) =>
+      new Promise((resolve, reject) => {
+        db.query(`
+          SELECT COUNT(*) AS count
+          FROM ${table}
+          GROUP BY DATE_FORMAT(${column}, '%Y-%m')
+          ORDER BY DATE_FORMAT(${column}, '%Y-%m') DESC
+          LIMIT 2
+        `, (err, results) => {
+          if (err) return reject(err);
+          if (results.length < 2) return resolve("0%");
+          const [latest, previous] = results;
+          const increase = ((latest.count - previous.count) / (previous.count || 1)) * 100;
+          resolve(`${increase.toFixed(2)}%`);
+        });
+      });
+
+    const getChartData = (table, column) =>
+      new Promise((resolve, reject) => {
+        db.query(`
+          SELECT DATE_FORMAT(${column}, '%Y-%m') AS label, COUNT(*) AS value
+          FROM ${table}
+          GROUP BY label
+          ORDER BY label
+          LIMIT 6
+        `, (err, results) => {
+          if (err) reject(err);
+          else resolve(results);
+        });
+      });
+
+    // Counts
+    const totalFarmOwners = await getCount("SELECT COUNT(*) AS count FROM farm_owner");
+    const totalFarms = await getCount("SELECT COUNT(*) AS count FROM farm");
+    const totalEmployees = await getCount("SELECT COUNT(*) AS count FROM employee");
+    const totalServicePlans = await getCount("SELECT COUNT(*) AS count FROM packages");
+
+    // Trends (Month-over-Month)
+    const farmOwnerIncrease = await getTrend("farm_owner", "created_at");
+    const farmsIncrease = await getTrend("farm", "created_at");
+    const employeesIncrease = await getTrend("employee", "created_at");
+    const servicePlansIncrease = await getTrend("packages", "created_at");
+
+    // Charts
+    const farmOwnersChart = await getChartData("farm_owner", "created_at");
+    const totalFarmsChart = await getChartData("farm", "created_at");
+    const employeesChart = await getChartData("employee", "created_at");
+    const servicePlansChart = await getChartData("packages", "created_at");
+
+    res.json({
+      stats: {
+        totalFarmOwners,
+        farmOwnerIncrease,
+        totalFarms,
+        farmsIncrease,
+        totalEmployees,
+        employeesIncrease,
+        totalServicePlans,
+        servicePlansIncrease,
+      },
+      charts: {
+        farmOwners: farmOwnersChart,
+        totalFarms: totalFarmsChart,
+        employees: employeesChart,
+        servicePlans: servicePlansChart,
+      },
+    });
+  } catch (err) {
+    console.error("Error in /api/dashboard:", err);
+    res.status(500).json({ error: "Failed to load dashboard data" });
+  }
+});
+
+
 
 
 // GET all farm owners
@@ -55,19 +143,20 @@ app.post("/api/farm_owners", (req, res) => {
   const registration_date = new Date();
 
   const query =
-    "INSERT INTO farm_owner (user_id, number_of_farms, status, registration_date, owner_name) VALUES (?, ?, ?, ?, ?)";
+    "INSERT INTO farm_owner (owner_name, user_id, number_of_farms, status, registration_date) VALUES (?, ?, ?, ?, ?)";
   db.query(
     query,
     [owner_name, user_id, number_of_farms, status, registration_date],
     (err, result) => {
       if (err) {
-        console.error("Error creating farm owner:", err);
+        console.error("Error inserting farm owner:", err);
         return res.status(500).json({ error: "Internal server error" });
       }
       res.status(201).json({ id: result.insertId, ...req.body, registration_date });
     }
   );
 });
+
 
 // UPDATE a farm owner
 app.put("/api/farm_owners/:id", (req, res) => {

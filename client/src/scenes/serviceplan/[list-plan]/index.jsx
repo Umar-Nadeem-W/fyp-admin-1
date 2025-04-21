@@ -99,10 +99,6 @@ const ServicePlans = () => {
         color: "white",
       }}
     >
-      <Typography variant="h4" textAlign="center" gutterBottom sx={{ color: "#FFFFFF" }}>
-        Choose Your Plan
-      </Typography>
-
       <Grid container spacing={4} justifyContent="center" mt={4}>
         {packages.map((pkg, index) =>
           pkg ? (

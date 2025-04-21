@@ -25,6 +25,7 @@ import Announcements from "./announcements";
 import Communications from "./communications";
 import PondDetails from "./pond/[ponddetails]";
 import PondListPage from "./pond";
+import Auth from "./auth";
 // export scenes
 export {
   Layout,
@@ -50,5 +51,6 @@ export {
   EmployeeInfo,
   AddEmployee,
   ServicePlans,
-  AddPlan
+  AddPlan,
+  Auth
 };

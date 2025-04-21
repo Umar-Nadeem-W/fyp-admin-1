@@ -19,11 +19,11 @@ import {
   ChevronLeft,
   ChevronRightOutlined,
   HomeOutlined,
-  Groups2Outlined,
-  AssignmentOutlined,
   BarChart,
   Campaign,
+  Groups2Outlined,
   Report,
+  AssignmentOutlined,
   Sms,
   AccountCircleOutlined,
   WavesOutlined,
@@ -32,33 +32,18 @@ import {
 
 import { FlexBetween } from ".";
 // Nav items
-const navItems = [
+const adminNavItems = [
+  { text: "Dashboard", icon: <HomeOutlined /> },
+  { text: "Reports", icon: <Report /> },
+  { text: "Communications", icon: <Sms /> },
+  { text: "Announcements", icon: <Campaign /> },
+  { text: "Analytics", icon: <BarChart /> },
   {
-    text: "Dashboard",
-    icon: <HomeOutlined />,
-  },
-  {
-    text: "Reports",
-    icon: <Report />,
-  },
-  {
-    text:"Communications",
-    icon:<Sms/>
-  },
-  {
-    text: "Announcements",
-    icon :<Campaign/>
-  },
-  {
-    text: "Analytics",
-    icon: <BarChart />,
-  },
-  {
-    text: "Farm Owner",
-    icon: <Groups2Outlined />,
+    text: "Admin Tools",
+    icon: <CropLandscape />,
     children: [
-      { text: "Owner Profile", path: "owner-profile" },
-      { text: "Owner Settings", path: "owner-settings" },
+      { text: "AI Alert", path: "AI-alert" },
+      { text: "Announcement", path: "announcements" },
     ],
   },
   {
@@ -85,13 +70,16 @@ const navItems = [
       { text: "Add Plan", path: "add-plan" },
     ],
   },
+];
+
+const farmOwnerNavItems = [
+  {
+    text: "Tasks",
+    icon: <AssignmentOutlined />,
+  },
   {
     text: "Workers",
     icon: <Groups2Outlined />,
-  },
-  {
-    text: "Tasks",
-    icon: <AssignmentOutlined/>,
   },
 ];
 
@@ -120,6 +108,15 @@ const Sidebar = ({
   useEffect(() => {
     setActive(pathname.substring(1));
   }, [pathname]);
+
+  const role = localStorage.getItem("role"); // "Admin", "Farm owner", etc.
+
+  let navItems = [];
+  if (role === "Admin") {
+    navItems = adminNavItems;
+  }if (role === "Farm owner") {
+    navItems = farmOwnerNavItems;
+  }
 
   return (
     <Box component="nav">
