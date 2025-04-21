@@ -30,7 +30,7 @@ import { Edit, Delete, Visibility, Add } from "@mui/icons-material";
 import axios from "axios";
 
 const initialOwnerState = {
-  name: "",
+  owner_name: "",
   user_id: "",
   number_of_farms: "",
   status: "Active",
@@ -125,7 +125,7 @@ const FarmOwnerManagement = () => {
           <Box component="form" onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               {[
-                { label: "Full Name", name: "name" },
+                { label: "Full Name", name: "owner_name" },
                 { label: "User ID", name: "user_id", type: "number" },
                 { label: "Number of Farms", name: "number_of_farms", type: "number" },
               ].map(({ label, name, type = "text" }) => (
