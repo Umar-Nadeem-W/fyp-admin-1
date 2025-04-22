@@ -81,6 +81,25 @@ const farmOwnerNavItems = [
     text: "Workers",
     icon: <Groups2Outlined />,
   },
+  {
+    text: "Ponds",
+    icon: <CropLandscape />,
+    children: [
+      { text: "Pond List", path: "pond" },
+      { text: "Pond Details", path: "pondDetails" },
+    ],
+  },
+  {
+    text: "Transactions",
+    icon: <AccountCircleOutlined />,
+  },
+  {
+    text: "SubscriptionsPage",
+    icon: <CropLandscape />,
+    children: [
+      { text: "Subscriptions", path: "subcriptionpage" },
+    ],
+  }
 ];
 
 // Sidebar

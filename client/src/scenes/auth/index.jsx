@@ -26,7 +26,7 @@ const Auth = () => {
   }
 
   // Farm Owner login
-  if (form.email === 'owner@machiro.com' && form.password === 'Owner@123') {
+  if (form.email === 'owner@123' && form.password === 'owner123') {
     localStorage.setItem('token', 'owner-token');
     localStorage.setItem('role', 'Farm owner');
     window.location.href = '/tasks';

@@ -26,6 +26,24 @@ import Communications from "./communications";
 import PondDetails from "./pond/[ponddetails]";
 import PondListPage from "./pond";
 import Auth from "./auth";
+import farmOwner_dashboard from "./dashboard";
+import Ponds from "./user/farmOwner/ponds/viewponds";
+import Devices from "./user/farmOwner/devices/view devices";
+import Tools from "./user/farmOwner/tools";
+import Farms from "./user/farmOwner/farms";
+import AddFarm from "./user/farmOwner/farms/addfarm";
+import Alerts from "./user/farmOwner/alerts";
+import Fish from "./user/farmOwner/fish/view fish"; 
+import NewTask from "./user/farmOwner/tasks/viewtasks";
+import AssignTask from "./user/farmOwner/tasks/assigntask";
+import Addpond from "./user/farmOwner/ponds/addpond";
+import AddDevice from "./user/farmOwner/devices/add device";
+import Installations from "./user/farmOwner/installations/view instalations";
+import AddInstallation from "./user/farmOwner/installations/add installation";
+import SubscriptionsPage from "./user/farmOwner/subscriptions";
+import FishDetails from "./user/farmOwner/fish/fish details";
+import AddFish from "./user/farmOwner/fish/add fish";
+import { Box } from "@mui/material";
 // export scenes
 export {
   Layout,
@@ -52,5 +70,22 @@ export {
   AddEmployee,
   ServicePlans,
   AddPlan,
-  Auth
+  Auth,
+  SubscriptionsPage,
+  Farms,
+  farmOwner_dashboard,
+  Ponds,
+  Devices,
+  Tools,
+  AddFish,
+  Installations,
+  AddInstallation,
+  AddFarm,
+  Alerts,
+  Fish ,
+  NewTask,
+  Addpond,
+  AssignTask,
+  AddDevice,
+  FishDetails
 };

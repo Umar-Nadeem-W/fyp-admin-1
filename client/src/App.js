@@ -10,7 +10,6 @@ import { themeSettings } from "theme";
 // Scenes
 import {
   Tasks,
-  Layout,
   Dashboard,
   Workers,
   Transactions,
@@ -33,8 +32,27 @@ import {
   AddEmployee,
   ServicePlans,
   AddPlan,
-  Auth
+  Auth,
+  SubscriptionsPage,
+  Farms,
+  Layout,
+  farmOwner_dashboard,
+  Ponds,
+  Devices,
+  Tools,
+  AddFish,
+  Installations,
+  AddInstallation,
+  AddFarm,
+  Alerts,
+  Fish ,
+  NewTask,
+  Addpond,
+  AssignTask,
+  AddDevice,
+  FishDetails
 } from "scenes";
+import AddPond from "scenes/user/farmOwner/ponds/addpond";
 
 // App
 const App = () => {
@@ -75,6 +93,24 @@ const App = () => {
               <Route path="/performance" element={<Performance />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/communications" element={<Communications />} />
+              <Route path="/subcriptionpage" element={<SubscriptionsPage />} />
+              <Route path="/farm" element={<Farms />} />
+              <Route path="/pond" element={<Ponds />} />
+              <Route path="/farm" element={<Farms />} />
+              <Route path="/devices" element={<Devices />} />
+              <Route path="/tools" element={<Tools />} />
+              <Route path="/addfish" element={<AddFish />} />
+              <Route path="/installations" element={<Installations />} />
+              <Route path="/addinstallations" element={<AddInstallation />} />
+              <Route path="/addfarm" element={<AddFarm />} />
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/fish" element={<Fish />} />
+              <Route path="/newtask" element={<NewTask />} />
+              <Route path="/addpond" element={<Addpond />} />
+              <Route path="/assigntask" element={<AssignTask />} />
+              <Route path="/adddevice" element={<AddDevice />} />
+              <Route path="/fishdetails" element={<FishDetails />} />
+              <Route path="/farmownerdashboard" element={<farmOwner_dashboard />} />
             </Route>
           </Routes>
         </ThemeProvider>
