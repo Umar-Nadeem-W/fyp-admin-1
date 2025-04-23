@@ -19,12 +19,15 @@ import {
   ChevronLeft,
   ChevronRightOutlined,
   HomeOutlined,
-  BarChart,
-  Campaign,
+  Build,
+  Water,
+  Subscriptions,
+  Task,
+  Devices,
   Groups2Outlined,
-  Report,
-  AssignmentOutlined,
-  Sms,
+  Downloading,
+  Phishing,
+  AddAlert,
   AccountCircleOutlined,
   WavesOutlined,
   CropLandscape,
@@ -34,10 +37,6 @@ import { FlexBetween } from ".";
 // Nav items
 const adminNavItems = [
   { text: "Dashboard", icon: <HomeOutlined /> },
-  { text: "Reports", icon: <Report /> },
-  { text: "Communications", icon: <Sms /> },
-  { text: "Announcements", icon: <Campaign /> },
-  { text: "Analytics", icon: <BarChart /> },
   {
     text: "Admin Tools",
     icon: <CropLandscape />,
@@ -74,32 +73,79 @@ const adminNavItems = [
 
 const farmOwnerNavItems = [
   {
-    text: "Tasks",
-    icon: <AssignmentOutlined />,
+    text: "FarmOwnerDashboard",
+    icon: <HomeOutlined />,
+  },
+  {
+    text: "Farms",
+    icon: <WavesOutlined />,
+    children: [
+      { text: "Farms", path: "farm" },
+    ],
   },
   {
     text: "Workers",
     icon: <Groups2Outlined />,
   },
   {
-    text: "Ponds",
-    icon: <CropLandscape />,
+    text: "Tasks",
+    icon: <Task />,
     children: [
-      { text: "Pond List", path: "pond" },
-      { text: "Pond Details", path: "pondDetails" },
+      { text: "New Task", path: "newtask" },
     ],
   },
   {
-    text: "Transactions",
-    icon: <AccountCircleOutlined />,
+    text: "Ponds",
+    icon: <Water />,
+    children: [
+      { text: "Add Pond", path: "addpond" },
+      { text: "View Pond", path: "pondDetails" },
+    ],
   },
   {
-    text: "SubscriptionsPage",
-    icon: <CropLandscape />,
+    text: "Devices",
+    icon: <Devices />,
+    children: [
+      { text: "Add Device", path: "adddevice" },
+      { text: "View Device", path: "viewdevice" },
+    ],
+  },
+  {
+    text: "Tools",
+    icon: <Build />,
+    children: [
+      { text: "New Task", path: "tools/new-task" },
+      { text: "Reports", path: "toolsreport" },
+    ]
+  },
+  {
+    text: "Installations",
+    icon: <Downloading />,
+    children: [
+      { text: "Add Installation", path: "addinstallations"},
+      { text: "View Installation", path: "installations"}
+    ]
+  },
+  {
+    text: "Alerts",
+    icon: <AddAlert />
+  },
+  {
+    text: "Fish",
+    icon: <Phishing />,
+    children: [
+      { text: "Add Fish", path: "addfish"},
+      { text: "Fish Details", path: "fishdetails"},
+      { text: "View Fish", path: "fish"}
+    ]
+  },
+  {
+    text: "Subscriptions",
+    icon: <Subscriptions />,
     children: [
       { text: "Subscriptions", path: "subcriptionpage" },
     ],
-  }
+  },
 ];
 
 // Sidebar
@@ -129,7 +175,7 @@ const Sidebar = ({
   }, [pathname]);
 
   const role = localStorage.getItem("role"); // "Admin", "Farm owner", etc.
-
+  
   let navItems = [];
   if (role === "Admin") {
     navItems = adminNavItems;
@@ -169,9 +215,14 @@ const Sidebar = ({
                     variant="h4"
                     fontWeight="bold"
                     onClick={() => {
-                      navigate("/dashboard");
-                      setActive("dashboard");
-                    }}
+                      if (role === "admin") {
+                        navigate("dashboard");
+                        setActive("dashboard");
+                      } else if (role === "farmOwner") {
+                        navigate("farmOwnerdashboard");
+                        setActive("farmOwnerdashboard");
+                      }
+                    }}                    
                     sx={{
                       cursor: "pointer",
                     }}

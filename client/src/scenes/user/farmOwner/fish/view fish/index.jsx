@@ -49,7 +49,7 @@ const Fish = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate("/fish/add-fish")}
+          onClick={() => navigate("/addfish")}
         >
           Add New Fish Stock
         </Button>

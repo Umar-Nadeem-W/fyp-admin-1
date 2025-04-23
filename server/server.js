@@ -127,6 +127,21 @@ app.get("/api/farm_owners", (req, res) => {
   });
 });
 
+const INSTALLATION_ID = 1;
+
+app.get("/insert_data", (req, res) => {
+  const { temp, ph, turbidity, do_value } = req.query;
+
+  const sql = "INSERT INTO pond_data (installation_id, temp, ph, turbidity, dissolved_oxygen) VALUES (?, ?, ?, ?, ?)";
+  db.query(sql, [INSTALLATION_ID, temp, ph, turbidity, do_value], (err) => {
+    if (err) {
+      console.error("Insert error:", err.sqlMessage);
+      return res.status(500).send("DB Insert Error: " + err.sqlMessage);
+    }
+    res.send("Data inserted into pond_data");
+  });
+});
+
 // GET a single farm owner
 app.get("/api/farm_owners/:id", (req, res) => {
   const query = "SELECT * FROM farm_owner WHERE id = ?";

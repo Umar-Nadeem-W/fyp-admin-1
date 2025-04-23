@@ -36,7 +36,7 @@ import {
   SubscriptionsPage,
   Farms,
   Layout,
-  farmOwner_dashboard,
+  FarmOwnerDashboard,
   Ponds,
   Devices,
   Tools,
@@ -49,10 +49,10 @@ import {
   NewTask,
   Addpond,
   AssignTask,
+  ToolsReports,
   AddDevice,
   FishDetails
 } from "scenes";
-import AddPond from "scenes/user/farmOwner/ponds/addpond";
 
 // App
 const App = () => {
@@ -90,27 +90,28 @@ const App = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/announcements" element={<Announcements />} />
+              <Route path="/toolsreport" element={<ToolsReports />} />
               <Route path="/performance" element={<Performance />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/communications" element={<Communications />} />
               <Route path="/subcriptionpage" element={<SubscriptionsPage />} />
               <Route path="/farm" element={<Farms />} />
-              <Route path="/pond" element={<Ponds />} />
+              <Route path="/pondDetails" element={<Ponds />} />
               <Route path="/farm" element={<Farms />} />
-              <Route path="/devices" element={<Devices />} />
-              <Route path="/tools" element={<Tools />} />
+              <Route path="/viewdevice" element={<Devices />} />
+              <Route path="/tools/new-task" element={<Tools />} />
               <Route path="/addfish" element={<AddFish />} />
               <Route path="/installations" element={<Installations />} />
               <Route path="/addinstallations" element={<AddInstallation />} />
-              <Route path="/addfarm" element={<AddFarm />} />
+              <Route path="/farms/addfarm" element={<AddFarm />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/fish" element={<Fish />} />
               <Route path="/newtask" element={<NewTask />} />
               <Route path="/addpond" element={<Addpond />} />
-              <Route path="/assigntask" element={<AssignTask />} />
+              <Route path="tasks/assign-task" element={<AssignTask />} />
               <Route path="/adddevice" element={<AddDevice />} />
               <Route path="/fishdetails" element={<FishDetails />} />
-              <Route path="/farmownerdashboard" element={<farmOwner_dashboard />} />
+              <Route path="/farmOwnerdashboard" element={<FarmOwnerDashboard />} />
             </Route>
           </Routes>
         </ThemeProvider>

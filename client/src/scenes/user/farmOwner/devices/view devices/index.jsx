@@ -44,7 +44,7 @@ const Devices = () => {
     <Box sx={{ padding: 3 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
         <Typography variant="h4">Devices</Typography>
-        <Button variant="contained" color="primary" onClick={() => navigate("/devices/add-device")}>
+        <Button variant="contained" color="primary" onClick={() => navigate("/adddevice")}>
           Add New Device
         </Button>
       </Box>

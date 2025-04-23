@@ -52,7 +52,7 @@ const Ponds = () => {
     <Box sx={{ padding: 3 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
         <Typography variant="h4">Ponds</Typography>
-        <Button variant="contained" color="primary" onClick={()=>{navigate('/ponds/add-pond')}}>
+        <Button variant="contained" color="primary" onClick={()=>{navigate('/addpond')}}>
           Add New Pond
         </Button>
       </Box>

@@ -43,7 +43,7 @@ const Installations = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate("/installations/add-installation")}
+          onClick={() => navigate("/addinstallations")}
         >
           Add New Installation
         </Button>

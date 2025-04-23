@@ -26,10 +26,11 @@ import Communications from "./communications";
 import PondDetails from "./pond/[ponddetails]";
 import PondListPage from "./pond";
 import Auth from "./auth";
-import farmOwner_dashboard from "./dashboard";
+import FarmOwnerDashboard from "./user/farmOwner/farmOwner_dashboard";
 import Ponds from "./user/farmOwner/ponds/viewponds";
 import Devices from "./user/farmOwner/devices/view devices";
-import Tools from "./user/farmOwner/tools";
+import Tools from "./user/farmOwner/tools/New Task";
+import ToolsReports from "./user/farmOwner/tools/reports";
 import Farms from "./user/farmOwner/farms";
 import AddFarm from "./user/farmOwner/farms/addfarm";
 import Alerts from "./user/farmOwner/alerts";
@@ -43,7 +44,6 @@ import AddInstallation from "./user/farmOwner/installations/add installation";
 import SubscriptionsPage from "./user/farmOwner/subscriptions";
 import FishDetails from "./user/farmOwner/fish/fish details";
 import AddFish from "./user/farmOwner/fish/add fish";
-import { Box } from "@mui/material";
 // export scenes
 export {
   Layout,
@@ -65,6 +65,7 @@ export {
   PondDetails,
   PondListPage,
   AllFarms,
+  ToolsReports,
   FarmOwner,
   EmployeeInfo,
   AddEmployee,
@@ -73,7 +74,7 @@ export {
   Auth,
   SubscriptionsPage,
   Farms,
-  farmOwner_dashboard,
+  FarmOwnerDashboard,
   Ponds,
   Devices,
   Tools,

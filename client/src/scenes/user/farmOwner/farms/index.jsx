@@ -40,7 +40,7 @@ const Farms = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate("/farms/add-farm")}
+          onClick={() => navigate("/farms/addfarm")}
         >
           Add Farm
         </Button>
