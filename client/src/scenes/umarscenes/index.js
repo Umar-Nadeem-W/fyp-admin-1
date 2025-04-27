@@ -12,7 +12,6 @@ import Fish from "./fish/view fish";
 import Reports from "./tools/reports";
 import NewTask from "./tools/New Task";
 import AssignTask from "./tasks/assigntask";
-import Addpond from "./ponds/addpond";
 import AddDevice from "./devices/add device";
 import Installations from "./installations/view instalations";
 import AddInstallation from "./installations/add installation";
@@ -38,7 +37,7 @@ export {
     Fish ,
     NewTask,
     Reports,
-    Addpond,
+    
     AssignTask,
     AddDevice,
     FishDetails,

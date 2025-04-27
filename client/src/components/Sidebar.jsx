@@ -51,82 +51,26 @@ const navItems = [
     icon: <HomeOutlined />,
   },
   {
-    text: "Farms",
-    icon: <Phishing />, // Represents farms with multiple ponds
-    children: [
-      { text: "View Farms", path: "farms", icon: <FileCopyOutlined /> },
-      { text: "Add Farm", path: "farms/add-farm", icon: <AddTaskOutlined /> },
-    ],
-  },
-  {
-    text: "Workers",
-    icon: <Groups2Outlined />, // Represents workers or teams
-  },
-  {
-    text: "Tasks",
-    icon: <AssignmentOutlined />,
-    children: 
-      [
-      { text: "View Tasks", path: "tasks/view-tasks", icon: <TaskAltOutlined /> } ,
-      { text: "Assign Tasks", path: "tasks/assign-task", icon: <AddTaskOutlined /> } // Represents task management
-      ]
-    },
-  {
     text: "Ponds",
     icon: <WaterOutlined />,
-    children:[
-      { text: "View Ponds", path: "ponds/view-ponds", icon: <TaskAltOutlined /> } ,
-      { text: "Add pond", path: "ponds/add-pond", icon: <AddTaskOutlined /> }
-    ], // Represents aquaculture ponds
+    
   },
   {
     text: "Devices",
     icon: <DeviceHubOutlined />,
-    children :[
-      { text: "View Devices", path: "devices/view-devices", icon: <Devices /> },
-      { text: "Add Device", path: "devices/add-device", icon: <AddToQueue />}
-    ] // Represents IoT devices or equipment
+  },
+  {
+    text: "Fish Stock",
+    path: "fishstock",
+    icon: <SetMealOutlined />,
   },
   {
     text: "Alerts",
-    icon : <ReportGmailerrorred/>
+    icon: <ReportGmailerrorred />,
   },
   {
-    text: "Installations",
-    icon: <DownloadOutlined />,
-    children:[
-      { text: "View Installations", path: "installations/view-installations", icon: <Cloud /> }, 
-      { text: "Add Installation", path: "installations/add-installation", icon: <Backup /> },
-
-    ] // Represents installations or downloads
-  },
-  {
-    text: "Tools",
-    icon: <BuildOutlined />, // Represents tools or utilities
-    children: [
-      { text: "Reports", path: "tools/reports", icon: <FileCopyOutlined /> }, // Updated route for reports
-      { text: "New Task", path: "tools/new-task", icon: <AddTaskOutlined /> }, // Updated route for new task
-    ],
-  },
-  {
-    text: "Subscriptions",
-    icon: <SubscriptionsOutlined />, // Represents subscription plans
-  },
-  {
-    text: "Statistics",
-    icon: <TrendingUpOutlined />, // Represents analytics or statistics
-    children: [
-      { text: "Farm Insights", path: "statistics/farm-insights", icon: <InsightsOutlined /> }, // Represents farm insights
-      { text: "Employee Insights", path: "statistics/employee-insights", icon: <InsightsOutlined /> }, // Represents employee insights
-    ],
-  },
-  {
-    text: "Fish",
-    icon: <SetMealOutlined />,
-    children: [
-      { text: "View Fish", path: "fish/view-fish", icon: <Visibility /> }, // Represents farm insights
-      { text: "Add Fish Stock", path: "fish/add-fish", icon: <AddTaskOutlined /> }, // Represents employee insi
-    ] // Replacing FishOutlined with EmojiNatureOutlined
+    text: "Tasks",
+    icon: <TaskAltOutlined />,
   },
 ];
 
