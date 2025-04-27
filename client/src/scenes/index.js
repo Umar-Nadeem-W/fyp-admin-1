@@ -27,6 +27,7 @@ import PondDetails from "./pond/[ponddetails]";
 import PondListPage from "./pond";
 import Auth from "./auth";
 import FarmOwnerDashboard from "./user/farmOwner/farmOwner_dashboard";
+import FarmWorkers from "./user/farmOwner/farmworker";
 import Ponds from "./user/farmOwner/ponds/viewponds";
 import Devices from "./user/farmOwner/devices/view devices";
 import Tools from "./user/farmOwner/tools/New Task";
@@ -88,5 +89,6 @@ export {
   Addpond,
   AssignTask,
   AddDevice,
-  FishDetails
+  FishDetails,
+  FarmWorkers
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,30 +14,91 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  CircularProgress,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
+import axios from "axios";
 
 const AssignTask = () => {
   const [selectedTask, setSelectedTask] = useState("");
   const [selectedPond, setSelectedPond] = useState("");
   const [selectedWorker, setSelectedWorker] = useState("");
 
-  const tasks = [
-    { id: 1, name: "Feed Fish", category: "Routine", description: "Feed the fish in Pond 101" },
-    { id: 2, name: "Clean Pond", category: "Maintenance", description: "Clean Pond 102" },
-    { id: 3, name: "Fix Aerator", category: "Repair", description: "Fix the aerator in Pond 103" },
-  ];
+  const [tasks, setTasks] = useState([]);
+  const [ponds, setPonds] = useState([]);
+  const [workers, setWorkers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const ponds = ["Pond 101", "Pond 102", "Pond 103"];
-  const workers = ["Worker A", "Worker B", "Worker C"];
+  const token = localStorage.getItem("token");
+  const farmId = localStorage.getItem("farmId"); // assuming you store farmId after login or selection
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!token || !farmId) {
+        alert("User not authenticated or farm not selected.");
+        return;
+      }
+
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        const [taskRes, pondRes, workerRes] = await Promise.all([
+          axios.get("http://localhost:5000/api/owner/get-all-tasks", { headers }),
+          axios.get(`http://localhost:5000/api/owner/get-ponds/${farmId}`, { headers }),
+          axios.get("http://localhost:5000/api/owner/get-workers", { headers }),
+        ]);
+
+        setTasks(Array.isArray(taskRes.data) ? taskRes.data : taskRes.data.tasks || []);
+        setPonds(pondRes.data || []);
+        setWorkers(workerRes.data || []);
+      } catch (error) {
+        console.error("Error fetching data:", error.response?.data || error.message);
+        alert("❌ Error fetching data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token, farmId]);
+
+  const handleSubmit = async () => {
     if (!selectedTask || !selectedPond || !selectedWorker) {
       alert("Please select a task, pond, and worker.");
       return;
     }
-    alert(`Task assigned successfully!\nTask: ${selectedTask}\nPond: ${selectedPond}\nWorker: ${selectedWorker}`);
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/owner/assign-task",
+        {
+          task_id: selectedTask,
+          pond_id: selectedPond,
+          worker_id: selectedWorker,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("✅ Task assigned successfully!");
+    } catch (error) {
+      console.error("Assignment error:", error.response?.data || error.message);
+      alert("❌ Failed to assign task.");
+    }
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ padding: 3, textAlign: "center" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -45,7 +106,6 @@ const AssignTask = () => {
         Assign Task
       </Typography>
 
-      {/* Task Table */}
       <Typography variant="h6" gutterBottom>
         Select a Task
       </Typography>
@@ -54,8 +114,8 @@ const AssignTask = () => {
           <TableHead>
             <TableRow>
               <TableCell>Task Name</TableCell>
-              <TableCell>Task Category</TableCell>
-              <TableCell>Task Description</TableCell>
+              <TableCell>Category</TableCell>
+              <TableCell>Description</TableCell>
               <TableCell>Select</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -63,22 +123,22 @@ const AssignTask = () => {
           <TableBody>
             {tasks.map((task) => (
               <TableRow key={task.id}>
-                <TableCell>{task.name}</TableCell>
-                <TableCell>{task.category}</TableCell>
+                <TableCell>{task.task_type}</TableCell>
+                <TableCell>{task.task_category}</TableCell>
                 <TableCell>{task.description}</TableCell>
                 <TableCell>
                   <Button
-                    variant={selectedTask === task.name ? "contained" : "outlined"}
-                    onClick={() => setSelectedTask(task.name)}
+                    variant={selectedTask === task.id ? "contained" : "outlined"}
+                    onClick={() => setSelectedTask(task.id)}
                   >
-                    {selectedTask === task.name ? "Selected" : "Select"}
+                    {selectedTask === task.id ? "Selected" : "Select"}
                   </Button>
                 </TableCell>
                 <TableCell>
-                  <Button onClick={() => alert(`Edit task: ${task.name}`)}>
+                  <Button onClick={() => alert(`Edit task: ${task.id}`)}>
                     <Edit />
                   </Button>
-                  <Button onClick={() => alert(`Delete task: ${task.name}`)}>
+                  <Button onClick={() => alert(`Delete task: ${task.id}`)}>
                     <Delete />
                   </Button>
                 </TableCell>
@@ -88,32 +148,29 @@ const AssignTask = () => {
         </Table>
       </TableContainer>
 
-      {/* Pond Selection */}
       <FormControl fullWidth sx={{ mb: 3 }}>
         <InputLabel>Pond</InputLabel>
         <Select value={selectedPond} onChange={(e) => setSelectedPond(e.target.value)}>
-          {ponds.map((pond, index) => (
-            <MenuItem key={index} value={pond}>
-              {pond}
+          {ponds.map((pond) => (
+            <MenuItem key={pond.id} value={pond.id}>
+              {pond.name || `Pond ${pond.id}`}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
 
-      {/* Worker Selection */}
       <FormControl fullWidth sx={{ mb: 3 }}>
         <InputLabel>Worker</InputLabel>
         <Select value={selectedWorker} onChange={(e) => setSelectedWorker(e.target.value)}>
-          {workers.map((worker, index) => (
-            <MenuItem key={index} value={worker}>
-              {worker}
+          {workers.map((worker) => (
+            <MenuItem key={worker.id} value={worker.id}>
+              {worker.name || `Worker ${worker.id}`}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
 
-      {/* Submit Button */}
-      <Button variant="contained" color="primary" onClick={handleSubmit} >
+      <Button variant="contained" color="primary" onClick={handleSubmit}>
         Assign Task
       </Button>
     </Box>

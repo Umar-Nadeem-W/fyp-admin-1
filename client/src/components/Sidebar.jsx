@@ -84,7 +84,7 @@ const farmOwnerNavItems = [
     ],
   },
   {
-    text: "Workers",
+    text: "FarmWorkers",
     icon: <Groups2Outlined />,
   },
   {
@@ -99,7 +99,7 @@ const farmOwnerNavItems = [
     icon: <Water />,
     children: [
       { text: "Add Pond", path: "addpond" },
-      { text: "View Pond", path: "pondDetails" },
+      { text: "View Pond", path: "ponds" },
     ],
   },
   {

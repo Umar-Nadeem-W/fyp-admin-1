@@ -51,7 +51,8 @@ import {
   AssignTask,
   ToolsReports,
   AddDevice,
-  FishDetails
+  FishDetails,
+  FarmWorkers
 } from "scenes";
 
 // App
@@ -96,7 +97,7 @@ const App = () => {
               <Route path="/communications" element={<Communications />} />
               <Route path="/subcriptionpage" element={<SubscriptionsPage />} />
               <Route path="/farm" element={<Farms />} />
-              <Route path="/pondDetails" element={<Ponds />} />
+              <Route path="/ponds" element={<Ponds />} />
               <Route path="/farm" element={<Farms />} />
               <Route path="/viewdevice" element={<Devices />} />
               <Route path="/tools/new-task" element={<Tools />} />
@@ -109,6 +110,7 @@ const App = () => {
               <Route path="/newtask" element={<NewTask />} />
               <Route path="/addpond" element={<Addpond />} />
               <Route path="tasks/assign-task" element={<AssignTask />} />
+              <Route path="/farmworkers" element={<FarmWorkers />} />
               <Route path="/adddevice" element={<AddDevice />} />
               <Route path="/fishdetails" element={<FishDetails />} />
               <Route path="/farmOwnerdashboard" element={<FarmOwnerDashboard />} />

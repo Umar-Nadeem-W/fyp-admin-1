@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({
+    user_name: '',
     email: '',
     password: '',
     confirmPassword: '',
+    contact_number: '',
     role: '',
   });
 
@@ -15,64 +17,65 @@ const Auth = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (isLogin) {
       // Admin login
-  if (form.email === 'admin@123' && form.password === 'admin123') {
-    localStorage.setItem('token', 'admin-token');
-    localStorage.setItem('role', 'Admin');
-    window.location.href = '/dashboard';
-    return;
-  }
+      if (form.email === 'admin@123' && form.password === 'admin123') {
+        localStorage.setItem('token', 'admin-token');
+        localStorage.setItem('role', 'Admin');
+        window.location.href = '/dashboard';
+        return;
+      }
 
-  // Farm Owner login
-  if (form.email === 'owner@123' && form.password === 'owner123') {
-    localStorage.setItem('token', 'owner-token');
-    localStorage.setItem('role', 'Farm owner');
-    window.location.href = '/farmOwnerdashboard';
-    return;
-  }
+      // Farm Owner login
+      if (form.email === 'owner@123' && form.password === 'owner123') {
+        localStorage.setItem('token', 'owner-token');
+        localStorage.setItem('role', 'Farm owner');
+        window.location.href = '/farmOwnerdashboard';
+        return;
+      }
 
-  // Worker login
-  if (form.email === 'worker@machiro.com' && form.password === 'Worker@123') {
-    localStorage.setItem('token', 'worker-token');
-    localStorage.setItem('role', 'Worker');
-    window.location.href = '/dashboard';
-    return;
-  }
+      // Worker login
+      if (form.email === 'worker@machiro.com' && form.password === 'Worker@123') {
+        localStorage.setItem('token', 'worker-token');
+        localStorage.setItem('role', 'Worker');
+        window.location.href = '/dashboard';
+        return;
+      }
     }
-  
-    // Normal login/signup
+
     if (!isLogin && form.password !== form.confirmPassword) {
       return alert("Passwords do not match!");
     }
-  
+
     const payload = isLogin
       ? { email: form.email, password: form.password }
       : {
+          user_name: form.user_name,
           email: form.email,
           password: form.password,
+          contact_number: form.contact_number,
           role: form.role,
-          contact_number: '0000000000',
         };
-  
+
     const endpoint = isLogin ? 'login' : 'signup';
-  
+
     try {
       const res = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await res.json();
-  
+
       if (!res.ok) throw new Error(data.error || 'Something went wrong');
-  
+
       if (isLogin) {
         localStorage.setItem('token', data.token);
         alert(`Login successful! Role: ${data.user.role}`);
-        window.location.href = '/dashboard';
+        window.location.href =
+          data.user.role === 4 ? '/farmOwnerdashboard' : '/dashboard';
       } else {
         alert('Signup successful! You can now log in.');
         setIsLogin(true);
@@ -81,8 +84,7 @@ const Auth = () => {
       alert(err.message);
     }
   };
-  
-  
+
   const containerStyle = {
     display: 'flex',
     height: '100vh',
@@ -154,15 +156,37 @@ const Auth = () => {
 
   return (
     <div style={containerStyle}>
-      {/* Left Side */}
       <div style={leftStyle}>MACHIRO</div>
 
-      {/* Right Side */}
       <div style={rightStyle}>
         <form style={formStyle} onSubmit={handleSubmit}>
           <h2 style={{ fontSize: '2rem', marginBottom: '20px', color: '#333' }}>
             {isLogin ? 'Login' : 'Sign Up'}
           </h2>
+
+          {!isLogin && (
+            <>
+              <input
+                type="text"
+                name="user_name"
+                placeholder="Username"
+                value={form.user_name}
+                onChange={handleChange}
+                style={inputStyle}
+                required
+              />
+
+              <input
+                type="text"
+                name="contact_number"
+                placeholder="Contact Number"
+                value={form.contact_number}
+                onChange={handleChange}
+                style={inputStyle}
+                required
+              />
+            </>
+          )}
 
           <input
             type="email"
@@ -237,14 +261,22 @@ const Auth = () => {
             {isLogin ? (
               <>
                 Don't have an account?
-                <button type="button" onClick={() => setIsLogin(false)} style={switchButtonStyle}>
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(false)}
+                  style={switchButtonStyle}
+                >
                   Create an Account
                 </button>
               </>
             ) : (
               <>
-                <button type="button" onClick={() => setIsLogin(true)} style={switchButtonStyle}>
-                Already have account? Login
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(true)}
+                  style={switchButtonStyle}
+                >
+                  Already have account? Login
                 </button>
               </>
             )}
