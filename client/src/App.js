@@ -8,27 +8,13 @@ import { themeSettings } from "theme";
 
 // Scenes
 import {
-  Workers,
-  Tasks,
-  Layout,
+ Farms,
   Dashboard,
-  AddFarm,
-  Farms,
-  Alerts,
-  Installations,
-  Devices,
-  Fish,
-  Ponds,
-  Reports,
-  NewTask,
-  AssignTask,
-  Addpond,
-  AddDevice,
-  AddInstallation, 
-  SubscriptionsPage, 
-  FishDetails,
-   AddFish
-} from "scenes/umarscenes";
+ CustomerQueries,
+ ServicePlans,
+ Subscriptions,
+ Layout,
+} from "scenes/employee scenes";
 
 // App
 const App = () => {
@@ -49,7 +35,10 @@ const App = () => {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/farms" element={<Farms />} />
-              <Route path="/tasks/view-tasks" element={<Tasks />} />
+              <Route path="/customerqueries" element={<CustomerQueries />} />
+              < Route path="/serviceplans" element={<ServicePlans />} />
+              <Route path="/subscriptions" element={<Subscriptions />} />
+              {/* <Route path="/tasks/view-tasks" element={<Tasks />} />
               <Route path="/workers" element={<Workers />} />
               <Route path="farms/add-farm" element={<AddFarm />} />
               <Route path="/alerts" element={<Alerts />} />
@@ -65,7 +54,7 @@ const App = () => {
               <Route path="/installations/add-installation" element={<AddInstallation/>} />
               <Route path="/subscriptions" element={<SubscriptionsPage/>} />
               <Route path="/fish/fish-details" element={<FishDetails/>} />
-              <Route path="/fish/add-fish" element={<AddFish/>} />
+              <Route path="/fish/add-fish" element={<AddFish/>} /> */}
               {/* <Route path="/tools" element={<Tools />} /> */}
 
               {/* <Route path="/farmsOwners" element={<FarmOwner />} /> */}
