@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom"; // ✅
 import { setMode } from "state";
 import {
   AppBar,
@@ -11,33 +12,33 @@ import {
   Box,
   Typography,
   IconButton,
-  InputBase,
 } from "@mui/material";
 import {
   LightModeOutlined,
   DarkModeOutlined,
   Menu as MenuIcon,
-  Search,
   SettingsOutlined,
   ArrowDropDownOutlined,
 } from "@mui/icons-material";
 
 import { FlexBetween } from ".";
 
-// Navbar
 const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
-  // redux dispatch items
   const dispatch = useDispatch();
-  // theme
   const theme = useTheme();
+  const navigate = useNavigate();
 
-  // nav state
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
 
-  // handle
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");  // Remove token
+    navigate("/");                 // Navigate to auth
+    window.location.reload();           // Force page reload to prevent cached page
+  };
 
   return (
     <AppBar
@@ -50,46 +51,17 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
       <Toolbar sx={{ justifyContent: "space-between" }}>
         {/* Left Side */}
         <FlexBetween>
-          {/* Sidebar Menu */}
-          <IconButton
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            title="Toggle Sidebar"
-          >
+          {/* Sidebar Toggle */}
+          <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             <MenuIcon />
           </IconButton>
 
-          {/* Search */}
-          <FlexBetween
-            backgroundColor={theme.palette.background.alt}
-            borderRadius="9px"
-            gap="3rem"
-            p="0.1rem 1.5rem"
-            title="Search"
-          >
-            <InputBase placeholder="Search..." />
-            <IconButton>
-              <Search />
-            </IconButton>
-          </FlexBetween>
         </FlexBetween>
 
         {/* Right Side */}
         <FlexBetween gap="1.5rem">
-          {/* Source Code */}
-          {/* <IconButton
-            onClick={() =>
-              window.open(
-                "http://www.github.com/sanidhyy/mern-admin/",
-                "_blank"
-              )
-            }
-            title="Source Code"
-          >
-            <GitHub sx={{ fontSize: "25px" }} />
-          </IconButton> */}
-
           {/* Dark/Light Mode */}
-          <IconButton onClick={() => dispatch(setMode())} title="Dark Mode">
+          <IconButton onClick={() => dispatch(setMode())}>
             {theme.palette.mode === "dark" ? (
               <DarkModeOutlined sx={{ fontSize: "25px" }} />
             ) : (
@@ -98,7 +70,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
           </IconButton>
 
           {/* Settings */}
-          <IconButton title="Setting">
+          <IconButton>
             <SettingsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
 
@@ -113,7 +85,6 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
                 textTransform: "none",
                 gap: "1rem",
               }}
-              title={user.name}
             >
               <Box
                 component="img"
@@ -125,39 +96,38 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
                 sx={{ objectFit: "cover" }}
               />
               <Box textAlign="left">
-                <Typography
-                  fontWeight="bold"
-                  fontSize="0.85rem"
-                  sx={{ color: theme.palette.secondary[100] }}
-                >
-                  {user.name}
-                </Typography>
-                <Typography
+              <Typography
+                fontWeight="bold"
+                fontSize="0.85rem"
+                sx={{ color: theme.palette.secondary[100] }}
+              >
+                {user.name}
+              </Typography>
+              <Typography
                   fontSize="0.75rem"
                   sx={{ color: theme.palette.secondary[200] }}
                 >
-                  {user.occupation}
+                  {user?.role_id === 1
+                    ? "Admin logged in"
+                    : user?.role_id === 4
+                    ? "Farm Owner logged in"
+                    : "User logged in"}
                 </Typography>
+
               </Box>
               <ArrowDropDownOutlined
-                sx={{
-                  color: theme.palette.secondary[300],
-                  fontSize: "25px",
-                }}
+                sx={{ color: theme.palette.secondary[300], fontSize: "25px" }}
               />
             </Button>
 
-            {/* DropDown */}
+            {/* Dropdown */}
             <Menu
               anchorEl={anchorEl}
               open={isOpen}
               onClose={handleClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             >
-              {/* log out */}
-              <MenuItem onClick={handleClose} title="Log Out">
-                Log Out
-              </MenuItem>
+              <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Menu>
           </FlexBetween>
         </FlexBetween>

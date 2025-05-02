@@ -9,17 +9,49 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const NewTask = () => {
   const [category, setCategory] = useState("");
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Task Created:\nCategory: ${category}\nType: ${taskType}\nDescription: ${description}`);
-    // Add logic to handle form submission
+  
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      alert("User not authenticated. Please log in again.");
+      return;
+    }
+  
+    try {
+      await axios.post(
+        "http://localhost:5000/api/owner/create-task-category",    
+        {
+          category,
+          task_type: taskType,
+          description,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      alert("✅ Task Created Successfully!");
+      navigate("/newtask");
+    } catch (error) {
+      console.error("Error creating task:", error);
+      alert("❌ Failed to create task. Please try again.");
+    }
   };
+  
 
   return (
     <Box sx={{ padding: 3 }}>

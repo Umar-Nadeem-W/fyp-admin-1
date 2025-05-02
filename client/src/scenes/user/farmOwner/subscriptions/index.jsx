@@ -1,52 +1,90 @@
-import React from "react";
-import { Box, Button, Card, CardContent, Typography, Grid } from "@mui/material";
+"use client";
+import React, { useState, useEffect } from "react";
+import { Box, Button, Card, CardContent, Typography, Grid, Alert } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
+import getStripe from "./get-stripe";
+
+const stripePromise = getStripe();
 
 const SubscriptionsPage = () => {
-  const handleButtonClick = (message) => {
-    alert(message);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [AWNInstance, setAWNInstance] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState(null); // <-- NEW
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const options = { position: "top-right" };
+      const AWN = require("awesome-notifications").default;
+      setAWNInstance(new AWN(options));
+    }
+  }, []);
+
+  // Check if payment success or cancel from query param
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const payment = query.get("payment");
+    if (payment === "success") {
+      setPaymentStatus("success");
+      if (AWNInstance) AWNInstance.success("Payment Successful! 🎉");
+    } else if (payment === "cancel") {
+      setPaymentStatus("cancel");
+      if (AWNInstance) AWNInstance.alert("Payment cancelled.");
+    }
+  }, [location.search, AWNInstance]);
+
+  const handleSubscribe = async (plan) => {
+    try {
+      if (!localStorage.getItem('token')) {
+        if (AWNInstance) AWNInstance.alert("Please log in first to subscribe.");
+        navigate("/login");
+        return;
+      }
+
+      const response = await fetch("http://localhost:5000/api/stripe/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`, // <-- ADD TOKEN
+        },
+        body: JSON.stringify({ plan }),
+      });
+      
+
+      if (!response.ok) throw new Error("Failed to create checkout session");
+
+      const result = await response.json();
+      const stripe = await stripePromise;
+      await stripe.redirectToCheckout({ sessionId: result.sessionId });
+    } catch (error) {
+      console.error("Checkout error:", error);
+      if (AWNInstance) AWNInstance.alert("Failed to initiate checkout.");
+    }
   };
 
   const subscriptions = [
     {
       name: "Basic Plan",
-      description: "Starter package for small farms",
+      plan: "basic",
       price: "$10/month",
-      duration: "1 month",
-      renewal_date: "2023-12-01",
-      max_sites: 1,
-      max_ponds: 2,
-      max_workers: 5,
-      buttonText: "Renew",
-      buttonColor: "primary",
-      buttonAction: () => handleButtonClick("Renew Basic Plan"),
+      description: "Perfect for small farms.",
+      features: ["1 Site", "2 Ponds", "5 Workers"],
       gradient: "linear-gradient(135deg, #6a11cb, #2575fc)",
     },
     {
-      name: "Plus Plan",
-      description: "Advanced package for medium farms",
+      name: "Premium Plan",
+      plan: "premium",
       price: "$20/month",
-      duration: "1 month",
-      renewal_date: "N/A",
-      max_sites: 3,
-      max_ponds: 5,
-      max_workers: 10,
-      buttonText: "Upgrade to Plus!",
-      buttonColor: "success",
-      buttonAction: () => handleButtonClick("Upgrade to Plus Plan"),
+      description: "Best for growing farms.",
+      features: ["3 Sites", "5 Ponds", "10 Workers"],
       gradient: "linear-gradient(135deg, #ff7e5f, #feb47b)",
     },
     {
-      name: "Premium Plan",
-      description: "Comprehensive package for large farms",
-      price: "$30/month",
-      duration: "1 month",
-      renewal_date: "N/A",
-      max_sites: 5,
-      max_ponds: 10,
-      max_workers: 20,
-      buttonText: "Upgrade to Premium!",
-      buttonColor: "success",
-      buttonAction: () => handleButtonClick("Upgrade to Premium Plan"),
+      name: "Pro Plus Plan",
+      plan: "proplus",
+      price: "$50/month",
+      description: "Ideal for large farms.",
+      features: ["5 Sites", "10 Ponds", "20 Workers"],
       gradient: "linear-gradient(135deg, #43cea2, #185a9d)",
     },
   ];
@@ -60,11 +98,23 @@ const SubscriptionsPage = () => {
           textAlign: "center",
           fontWeight: "bold",
           color: "#333",
-          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
+          textShadow: "2px 2px 4px rgba(0,0,0,0.2)",
         }}
       >
-        Current Subscription
+        Choose Your Subscription
       </Typography>
+
+      {paymentStatus === "success" && (
+        <Alert severity="success" sx={{ mb: 3, textAlign: "center" }}>
+          🎉 Payment Successful! Thank you for subscribing.
+        </Alert>
+      )}
+      {paymentStatus === "cancel" && (
+        <Alert severity="warning" sx={{ mb: 3, textAlign: "center" }}>
+          ⚠️ Payment was cancelled. Please try again.
+        </Alert>
+      )}
+
       <Grid container spacing={4} justifyContent="center">
         {subscriptions.map((sub, index) => (
           <Grid item xs={12} md={4} key={index}>
@@ -73,89 +123,52 @@ const SubscriptionsPage = () => {
                 background: sub.gradient,
                 color: "#fff",
                 borderRadius: "15px",
-                boxShadow: "0 10px 20px rgba(0, 0, 0, 0.2)",
-                overflow: "hidden",
-                transform: "scale(1)",
-                transition: "transform 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                },
+                boxShadow: "0 10px 20px rgba(0,0,0,0.2)",
+                transition: "transform 0.3s",
+                "&:hover": { transform: "scale(1.05)" },
               }}
             >
               <CardContent>
-                <Typography
-                  variant="h5"
-                  sx={{
-                    mb: 2,
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    textTransform: "uppercase",
-                    letterSpacing: "1px",
-                  }}
-                >
+                <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold", textAlign: "center" }}>
                   {sub.name}
                 </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    mb: 2,
-                    textAlign: "center",
-                    fontStyle: "italic",
-                  }}
-                >
+                <Typography variant="body1" sx={{ mb: 2, textAlign: "center", fontStyle: "italic" }}>
                   {sub.description}
                 </Typography>
-                <Typography variant="h6" sx={{ mb: 1, textAlign: "center" }}>
-                  <strong>Price:</strong> {sub.price}
+                <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+                  {sub.price}
                 </Typography>
-                <Typography variant="body2" sx={{ mb: 1, textAlign: "center" }}>
-                  <strong>Duration:</strong> {sub.duration}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, textAlign: "center" }}>
-                  <strong>Renewal Date:</strong> {sub.renewal_date}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, textAlign: "center" }}>
-                  <strong>Max Sites:</strong> {sub.max_sites}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, textAlign: "center" }}>
-                  <strong>Max Ponds:</strong> {sub.max_ponds}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 2, textAlign: "center" }}>
-                  <strong>Max Workers:</strong> {sub.max_workers}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  {sub.features.map((feature, idx) => (
+                    <Typography
+                      key={idx}
+                      variant="body2"
+                      sx={{ textAlign: "center", fontSize: "14px" }}
+                    >
+                      - {feature}
+                    </Typography>
+                  ))}
+                </Box>
                 <Button
                   variant="contained"
-                  color={sub.buttonColor}
                   fullWidth
                   sx={{
+                    mt: 2,
+                    backgroundColor: "#fff",
+                    color: "#000",
                     fontWeight: "bold",
                     borderRadius: "25px",
-                    boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
+                    "&:hover": { backgroundColor: "#eee" },
                   }}
-                  onClick={sub.buttonAction}
+                  onClick={() => handleSubscribe(sub.plan)}
                 >
-                  {sub.buttonText}
+                  Subscribe
                 </Button>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
-      <Box sx={{ mt: 6, textAlign: "center" }}>
-        <Button
-          variant="contained"
-          color="error"
-          sx={{
-            fontWeight: "bold",
-            borderRadius: "25px",
-            padding: "10px 20px",
-            boxShadow: "0 5px 10px rgba(255, 0, 0, 0.3)",
-          }}
-          onClick={() => handleButtonClick("Cancel Subscription")}
-        >
-          Cancel Subscription
-        </Button>
-      </Box>
     </Box>
   );
 };

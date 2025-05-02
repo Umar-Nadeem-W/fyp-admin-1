@@ -42,7 +42,7 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get('/api/dashboard');
+      const response = await axios.get('/api/admin/dashboard');
       
       if (response.data) {
         setDashboardData(response.data);

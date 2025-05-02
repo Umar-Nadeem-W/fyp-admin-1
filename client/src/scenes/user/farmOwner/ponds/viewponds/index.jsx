@@ -1,62 +1,72 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
-  Button,
+  Typography,
+  CircularProgress,
+  Paper,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  Paper,
 } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-const Ponds = () => {
-   const navigate = useNavigate(); // Add navigate hook
-    const ponds = [
-    {
-      id: 1,
-      farm_id: 101,
-      name: "Pond A",
-      type: "Clay",
-      length: 50,
-      width: 30,
-      depth: 10,
-      status: "Stable",
-    },
-    {
-      id: 2,
-      farm_id: 102,
-      name: "Pond B",
-      type: "Concrete",
-      length: 60,
-      width: 40,
-      depth: 15,
-      status: "Healthy",
-    },
-    {
-      id: 3,
-      farm_id: 103,
-      name: "Pond C",
-      type: "Clay",
-      length: 70,
-      width: 50,
-      depth: 20,
-      status: "Warning",
-    },
-  ];
+import axios from "axios";
+import { useNavigate } from "react-router-dom";  // <- Correct import
+
+const ViewPond = () => {
+  const [ponds, setPonds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+  const farmId = localStorage.getItem("farmId");
+  const navigate = useNavigate();  // <- Correct usage
+
+  useEffect(() => {
+    const fetchPonds = async () => {
+      if (!token || !farmId) {
+        alert("User not authenticated or farm not selected.");
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/owner/get-ponds-by-farm/${farmId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Ponds API response:", response.data);
+        setPonds(response.data);
+        // navigate("/ponds");  // ❌ Remove this
+      } catch (error) {
+        console.error("Error fetching ponds:", error.response?.data || error.message);
+        alert("❌ Failed to fetch ponds");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPonds();
+  }, [token, farmId, navigate]); // <- Added navigate in dependency (optional best practice)
+
+  if (loading) {
+    return (
+      <Box sx={{ padding: 3, textAlign: "center" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!ponds.length) {
+    return <Typography sx={{ padding: 3 }}>No ponds found</Typography>;
+  }
 
   return (
     <Box sx={{ padding: 3 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="h4">Ponds</Typography>
-        <Button variant="contained" color="primary" onClick={()=>{navigate('/addpond')}}>
-          Add New Pond
-        </Button>
-      </Box>
-      <TableContainer component={Paper}>
+      <Typography variant="h4" gutterBottom>
+        All Ponds
+      </Typography>
+      <Paper elevation={3}>
         <Table>
           <TableHead>
             <TableRow>
@@ -68,7 +78,6 @@ const Ponds = () => {
               <TableCell>Width</TableCell>
               <TableCell>Depth</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -82,21 +91,13 @@ const Ponds = () => {
                 <TableCell>{pond.width}</TableCell>
                 <TableCell>{pond.depth}</TableCell>
                 <TableCell>{pond.status}</TableCell>
-                <TableCell>
-                  <Button onClick={() => alert(`Edit pond: ${pond.name}`)}>
-                    <Edit />
-                  </Button>
-                  <Button onClick={() => alert(`Delete pond: ${pond.name}`)} sx={{ color: "red" }}>
-                    <Delete />
-                  </Button>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </Paper>
     </Box>
   );
 };
 
-export default Ponds;
+export default ViewPond;
