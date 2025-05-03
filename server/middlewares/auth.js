@@ -32,7 +32,6 @@ export const verifyToken = (req, res, next) => {
     }
 };
 
-
 export const verifyAdmin = (req, res, next) => {
   if (req.user.role !== 1) { // Assuming 1 is the role ID for Admin
       return res.status(403).json({ error: "Access denied. Admins only." });

@@ -21,7 +21,7 @@ const Auth = () => {
     if (!isLogin && form.password !== form.confirmPassword) {
       return alert("Passwords do not match!");
     }
-  
+
     const payload = isLogin
       ? { email: form.email, password: form.password }
       : {
@@ -30,20 +30,20 @@ const Auth = () => {
           password: form.password,
           role: form.role, // Role is needed during signup
         };
-  
+
     const endpoint = isLogin ? 'login' : 'signup';
-  
+
     try {
       const res = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await res.json();
-  
+
       if (!res.ok) throw new Error(data.error || 'Something went wrong');
-  
+
       if (isLogin) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.user.role); // Save the role ID too if needed
