@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -9,74 +9,29 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const AddInstallation = () => {
-  const navigate = useNavigate();
   const [pond, setPond] = useState("");
   const [device, setDevice] = useState("");
   const [notes, setNotes] = useState("");
-  const [ponds, setPonds] = useState([]);
-  const [devices, setDevices] = useState([]);
 
-  const fetchPondsAndDevices = async () => {
-    const token = localStorage.getItem("token");
+  const ponds = [
+    { id: "P456", name: "Pond A" },
+    { id: "P123", name: "Pond B" },
+    // Add more ponds as needed
+  ];
 
-    try {
-      const [pondRes, deviceRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/owner/get-ponds", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get("http://localhost:5000/api/owner/get-devices", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
+  const devices = [
+    { id: "D123", name: "Water Sensor" },
+    { id: "D789", name: "Actuator X" },
+    // Add more devices as needed
+  ];
 
-      setPonds(pondRes.data);
-      setDevices(deviceRes.data);
-    } catch (error) {
-      console.error("Error fetching ponds/devices:", error.response?.data || error.message);
-      alert("❌ Failed to load pond or device data.");
-    }
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Token not found. Please login.");
-      return;
-    }
-
-    try {
-      await axios.post(
-        "http://localhost:5000/api/owner/create-installation",
-        {
-          pondId: pond,
-          deviceId: device,
-          installation_date: new Date().toISOString().split("T")[0],
-          notes,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert("Installation created successfully!");
-      navigate("/installations");
-    } catch (error) {
-      console.error("Error creating installation:", error.response?.data || error.message);
-      alert("Failed to create installation.");
-    }
+    alert(`Installation added:\nPond: ${pond}\nDevice: ${device}\nNotes: ${notes}`);
+    // Add logic to handle form submission
   };
-
-  useEffect(() => {
-    fetchPondsAndDevices();
-  }, []);
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -99,7 +54,6 @@ const AddInstallation = () => {
             ))}
           </Select>
         </FormControl>
-
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel id="device-label">Select Device</InputLabel>
           <Select
@@ -115,7 +69,6 @@ const AddInstallation = () => {
             ))}
           </Select>
         </FormControl>
-
         <TextField
           label="Notes"
           multiline
@@ -125,7 +78,6 @@ const AddInstallation = () => {
           onChange={(e) => setNotes(e.target.value)}
           sx={{ mb: 2 }}
         />
-
         <Button type="submit" variant="contained" color="primary">
           Add Installation
         </Button>

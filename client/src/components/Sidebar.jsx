@@ -19,7 +19,6 @@ import {
   ChevronLeft,
   ChevronRightOutlined,
   HomeOutlined,
-  QuestionAnswer,
   Build,
   Water,
   Subscriptions,
@@ -85,7 +84,7 @@ const farmOwnerNavItems = [
     ],
   },
   {
-    text: "FarmWorkers",
+    text: "Workers",
     icon: <Groups2Outlined />,
   },
   {
@@ -100,7 +99,7 @@ const farmOwnerNavItems = [
     icon: <Water />,
     children: [
       { text: "Add Pond", path: "addpond" },
-      { text: "View Pond", path: "ponds" },
+      { text: "View Pond", path: "pondDetails" },
     ],
   },
   {
@@ -136,6 +135,7 @@ const farmOwnerNavItems = [
     icon: <Phishing />,
     children: [
       { text: "Add Fish", path: "addfish"},
+      { text: "Fish Details", path: "fishdetails"},
       { text: "View Fish", path: "fish"}
     ]
   },
@@ -145,35 +145,6 @@ const farmOwnerNavItems = [
     children: [
       { text: "Subscriptions", path: "subcriptionpage" },
     ],
-  },
-];
-
-const employeenavItems = [
-  {
-    text: "employeeDashboard",
-    icon: <HomeOutlined />,
-    path: "employeedashboard"
-  },
-  {
-    text: "EmployeeFarms",
-    icon: <Phishing />, 
-  },
-  
-  {
-    text: "CustomerQueries",
-    icon: <QuestionAnswer />,
-    path: "customerqueries",
-    },
-  {
-    text: "EmployeeServiceplans",
-    icon: <QuestionAnswer />,
-    path: "Employeeserviceplans"
-  },
- 
-  {
-    text: "EmployeeSubscriptions",
-    icon: <Subscriptions />,
-    path: "employeesubscriptions"
   },
 ];
 
@@ -203,17 +174,13 @@ const Sidebar = ({
     setActive(pathname.substring(1));
   }, [pathname]);
 
-  const role = parseInt(localStorage.getItem("role")); 
+  const role = localStorage.getItem("role"); // "Admin", "Farm owner", etc.
   
   let navItems = [];
-  if (role === 1) {
+  if (role === "Admin") {
     navItems = adminNavItems;
-  } else if (role === 4) {
+  }if (role === "Farm owner") {
     navItems = farmOwnerNavItems;
-  } else if (role === 2) {
-    navItems = employeenavItems;
-  } else {
-    navItems = []; 
   }
 
   return (
@@ -254,9 +221,6 @@ const Sidebar = ({
                       } else if (role === "farmOwner") {
                         navigate("farmOwnerdashboard");
                         setActive("farmOwnerdashboard");
-                      } else if (role === "employee") {
-                        navigate("employeedashboard");
-                        setActive("employeedashboard");
                       }
                     }}                    
                     sx={{

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -34,8 +34,8 @@ const initialFarmState = {
   state: "",
   country: "",
   zip: "",
-  number_of_ponds: 0,
-  number_of_workers: 0,
+  number_of_ponds: "",
+  number_of_workers: "",
 };
 
 const FarmManagement = () => {
@@ -44,75 +44,34 @@ const FarmManagement = () => {
   const [showFarmForm, setShowFarmForm] = useState(false);
   const [farmData, setFarmData] = useState(initialFarmState);
   const [viewFarm, setViewFarm] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    fetchFarms();
+  }, []);
 
-  const axiosConfig = useMemo(() => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }), [token]);
-  
-
-  const fetchFarms = useCallback(async () => {
+  const fetchFarms = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/farms", axiosConfig);
+      const response = await axios.get("http://localhost:5000/api/farms");
       setFarms(response.data);
     } catch (error) {
       console.error("Error fetching farms:", error);
     }
-  }, [axiosConfig]);
-
-  useEffect(() => {
-    fetchFarms();
-  }, [fetchFarms]);
-
-  const filteredFarms = useMemo(() => {
-    if (!searchQuery.trim()) return farms;
-    return farms.filter((farm) =>
-      [farm.name, farm.owner_name, farm.city]
-        .some((field) =>
-          field?.toLowerCase().includes(searchQuery.trim().toLowerCase())
-        )
-    );
-  }, [searchQuery, farms]);
-  
+  };
 
   const handleFarmSubmit = async (e) => {
     e.preventDefault();
     try {
-      const farmPayload = {
-        owner_id: farmData.owner_id,
-        name: farmData.name,
-        address: farmData.address,
-        city: farmData.city,
-        state: farmData.state,
-        country: farmData.country,
-        zip: farmData.zip,
-        status: "Active",
-      };
+      const farmPayload = { ...farmData };
+      delete farmPayload.owner_name; // don't send extra fields to backend
 
       if (selectedFarm) {
-        const updatePayload = {
-          ...farmPayload,
-          number_of_ponds: farmData.number_of_ponds,
-          number_of_workers: farmData.number_of_workers,
-        };
-
-        await axios.put(
-          `http://localhost:5000/api/admin/farms/${selectedFarm}`,
-          updatePayload,
-          axiosConfig
-        );
+        await axios.put(`http://localhost:5000/api/farms/${selectedFarm}`, farmPayload);
       } else {
-        await axios.post("http://localhost:5000/api/admin/farms", farmPayload, axiosConfig);
+        await axios.post("http://localhost:5000/api/farms", farmPayload);
       }
-
       fetchFarms();
       resetForm();
     } catch (error) {
@@ -132,7 +91,7 @@ const FarmManagement = () => {
 
   const handleDeleteFarm = async (farmId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/admin/farms/${farmId}`, axiosConfig);
+      await axios.delete(`http://localhost:5000/api/farms/${farmId}`);
       fetchFarms();
     } catch (error) {
       console.error("Error deleting farm:", error);
@@ -215,17 +174,6 @@ const FarmManagement = () => {
         </Paper>
       )}
 
-<Box mb={2}>
-  <TextField
-    label="Search by farm name, owner, or city"
-    variant="outlined"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    fullWidth
-  />
-</Box>
-
-
       <Typography variant="h5" gutterBottom>
         All Farms
       </Typography>
@@ -246,7 +194,7 @@ const FarmManagement = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-            {filteredFarms.map((farm) => (
+              {farms.map((farm) => (
                 <TableRow key={farm.id} hover>
                   <TableCell>{farm.id}</TableCell>
                   <TableCell>{farm.name}</TableCell>
@@ -290,16 +238,36 @@ const FarmManagement = () => {
         <DialogContent dividers>
           {viewFarm && (
             <List>
-              <ListItem><ListItemText primary="Farm ID" secondary={viewFarm.id} /></ListItem>
-              <ListItem><ListItemText primary="Name" secondary={viewFarm.name} /></ListItem>
-              <ListItem><ListItemText primary="Owner Name" secondary={viewFarm.owner_name || "N/A"} /></ListItem>
-              <ListItem><ListItemText primary="Address" secondary={viewFarm.address} /></ListItem>
-              <ListItem><ListItemText primary="City" secondary={viewFarm.city} /></ListItem>
-              <ListItem><ListItemText primary="State" secondary={viewFarm.state} /></ListItem>
-              <ListItem><ListItemText primary="Country" secondary={viewFarm.country} /></ListItem>
-              <ListItem><ListItemText primary="Zip Code" secondary={viewFarm.zip} /></ListItem>
-              <ListItem><ListItemText primary="Number of Ponds" secondary={viewFarm.number_of_ponds} /></ListItem>
-              <ListItem><ListItemText primary="Number of Workers" secondary={viewFarm.number_of_workers} /></ListItem>
+              <ListItem>
+                <ListItemText primary="Farm ID" secondary={viewFarm.id} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Name" secondary={viewFarm.name} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Owner Name" secondary={viewFarm.owner_name || "N/A"} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Address" secondary={viewFarm.address} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="City" secondary={viewFarm.city} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="State" secondary={viewFarm.state} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Country" secondary={viewFarm.country} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Zip Code" secondary={viewFarm.zip} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Number of Ponds" secondary={viewFarm.number_of_ponds} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Number of Workers" secondary={viewFarm.number_of_workers} />
+              </ListItem>
             </List>
           )}
         </DialogContent>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Grid } from "@mui/material";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const AddFarm = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +13,6 @@ const AddFarm = () => {
     number_of_ponds: "",
     number_of_workers: "",
   });
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,29 +21,22 @@ const AddFarm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token"); 
-  
+
+    const dataToSend = {
+      owner_id: 1, // Hardcoded owner_id
+      ...formData,
+    };
+    console.log("Data to send:", dataToSend);
+
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/owner/add-farm",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-  
+      const response = await axios.post("http://localhost:5000/api/farms", dataToSend);
       console.log("Farm added successfully:", response.data);
       alert("Farm added successfully!");
-      navigate("/farm"); 
     } catch (error) {
       console.error("Error adding farm:", error);
       alert("Failed to add farm. Please try again.");
     }
   };
-  
 
   return (
     <Box sx={{ maxWidth: 600, margin: "auto", padding: 3, boxShadow: 3, borderRadius: 2 }}>

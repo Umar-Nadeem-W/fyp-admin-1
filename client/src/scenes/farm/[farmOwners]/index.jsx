@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -16,6 +16,8 @@ import {
   TableRow,
   IconButton,
   MenuItem,
+} from "@mui/material";
+import {
   Dialog,
   DialogTitle,
   DialogContent,
@@ -28,7 +30,9 @@ import { Edit, Delete, Visibility, Add } from "@mui/icons-material";
 import axios from "axios";
 
 const initialOwnerState = {
+  owner_name: "",
   user_id: "",
+  number_of_farms: "",
   status: "Active",
 };
 
@@ -42,21 +46,13 @@ const FarmOwnerManagement = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const token = localStorage.getItem("token");
-
-  const axiosConfig = useMemo(() => ({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }), [token]);
-
   useEffect(() => {
     fetchOwners();
   }, []);
 
   const fetchOwners = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/farm_owners", axiosConfig);
+      const response = await axios.get("http://localhost:5000/api/farm_owners");
       setOwners(response.data);
     } catch (error) {
       console.error("Error fetching farm owners:", error);
@@ -66,25 +62,11 @@ const FarmOwnerManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = {
-        user_id: ownerData.user_id,
-        status: ownerData.status,
-      };
-
       if (selectedOwner) {
-        await axios.put(
-          `http://localhost:5000/api/admin/farm_owners/${selectedOwner}`,
-          payload,
-          axiosConfig
-        );
+        await axios.put(`http://localhost:5000/api/farm_owners/${selectedOwner}`, ownerData);
       } else {
-        await axios.post(
-          "http://localhost:5000/api/admin/farm_owners",
-          payload,
-          axiosConfig
-        );
+        await axios.post("http://localhost:5000/api/farm_owners", ownerData);
       }
-
       fetchOwners();
       resetForm();
     } catch (error) {
@@ -104,7 +86,7 @@ const FarmOwnerManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/admin/farm_owners/${id}`, axiosConfig);
+      await axios.delete(`http://localhost:5000/api/farm_owners/${id}`);
       fetchOwners();
     } catch (error) {
       console.error("Error deleting farm owner:", error);
@@ -142,17 +124,23 @@ const FarmOwnerManagement = () => {
           </Typography>
           <Box component="form" onSubmit={handleSubmit}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="User ID"
-                  name="user_id"
-                  value={ownerData.user_id}
-                  onChange={handleChange}
-                  required
-                  type="number"
-                />
-              </Grid>
+              {[
+                { label: "Full Name", name: "owner_name" },
+                { label: "User ID", name: "user_id", type: "number" },
+                { label: "Number of Farms", name: "number_of_farms", type: "number" },
+              ].map(({ label, name, type = "text" }) => (
+                <Grid item xs={12} sm={6} key={name}>
+                  <TextField
+                    fullWidth
+                    label={label}
+                    name={name}
+                    value={ownerData[name]}
+                    onChange={handleChange}
+                    required
+                    type={type}
+                  />
+                </Grid>
+              ))}
               <Grid item xs={12} sm={6}>
                 <TextField
                   select
@@ -203,7 +191,7 @@ const FarmOwnerManagement = () => {
               {owners.map((owner) => (
                 <TableRow key={owner.id} hover>
                   <TableCell>{owner.id}</TableCell>
-                  <TableCell>{owner.owner_name || "N/A"}</TableCell>
+                  <TableCell>{owner.owner_name}</TableCell>
                   <TableCell>{owner.user_id}</TableCell>
                   <TableCell>{owner.number_of_farms}</TableCell>
                   <TableCell>{owner.status}</TableCell>
@@ -220,7 +208,9 @@ const FarmOwnerManagement = () => {
                       onClick={() => {
                         setSelectedOwner(owner.id);
                         setOwnerData({
+                          name: owner.owner_name,
                           user_id: owner.user_id,
+                          number_of_farms: owner.number_of_farms,
                           status: owner.status,
                         });
                         setShowForm(true);
@@ -250,7 +240,7 @@ const FarmOwnerManagement = () => {
                 <ListItemText primary="ID" secondary={viewOwner.id} />
               </ListItem>
               <ListItem>
-                <ListItemText primary="Owner Name" secondary={viewOwner.owner_name || "N/A"} />
+                <ListItemText primary="Name" secondary={viewOwner.owner_name} />
               </ListItem>
               <ListItem>
                 <ListItemText primary="User ID" secondary={viewOwner.user_id} />

@@ -1,4 +1,4 @@
-import Workers from "./farmworker";
+import Workers from "./workers";
 import Tasks from "./tasks/viewtasks";
 import Layout from "./layout";
 import Dashboard from "./farmOwner_dashboard";
@@ -19,6 +19,7 @@ import AddInstallation from "./installations/add installation";
 import SubscriptionsPage from "./subscriptions";
 import FishDetails from "./fish/fish details";
 import AddFish from "./fish/add fish";
+import { Box } from "@mui/material";
 export {
     SubscriptionsPage,
     Farms,

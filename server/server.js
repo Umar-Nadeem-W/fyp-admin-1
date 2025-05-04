@@ -1,10 +1,8 @@
-import express from 'express';
-import mysql from 'mysql2';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
-
-dotenv.config();  // Load your .env file
+const express = require("express");
+const mysql = require('mysql2');
+const cors = require("cors");
+const bodyParser = require("body-parser");
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,7 +15,7 @@ const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  database: process.env.DB_NAME,
 });
 
 db.connect((err) => {
@@ -28,7 +26,9 @@ db.connect((err) => {
   }
 });
 
-
+// GET Dashboard Data
+// GET Dashboard Data (No timestamp fields required)
+// GET Dashboard Data with timestamp trends
 app.get("/api/dashboard", async (req, res) => {
   try {
     const getCount = (sql) =>
@@ -111,6 +111,7 @@ app.get("/api/dashboard", async (req, res) => {
     res.status(500).json({ error: "Failed to load dashboard data" });
   }
 });
+
 
 
 

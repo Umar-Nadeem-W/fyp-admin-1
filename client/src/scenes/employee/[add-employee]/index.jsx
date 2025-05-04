@@ -6,6 +6,8 @@ import {
   Paper,
   TextField,
   Typography,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -32,19 +34,8 @@ const AddEmployee = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.post(
-        "http://localhost:5000/api/admin/employees",
-        employeeData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      navigate("/employee-info");
+      await axios.post("http://localhost:5000/api/employee", employeeData);
+      navigate("/employee-info"); // go back to list
     } catch (err) {
       console.error("Error adding employee:", err);
     }
@@ -88,16 +79,32 @@ const AddEmployee = () => {
                 fullWidth
               />
             </Grid>
+            {[
+              { label: "Manage Devices", name: "manage_devices" },
+              { label: "Send Announcement", name: "send_announcement" },
+              { label: "Manage Users", name: "manage_users" },
+              { label: "Can See Complaints", name: "can_see_complaints" },
+            ].map(({ label, name }) => (
+              <Grid item xs={12} sm={6} key={name}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={employeeData[name]}
+                      onChange={handleChange}
+                      name={name}
+                    />
+                  }
+                  label={label}
+                />
+              </Grid>
+            ))}
           </Grid>
+
           <Box mt={3}>
             <Button type="submit" variant="contained" sx={{ mr: 2 }}>
               Create
             </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => navigate("/employee-info")}
-            >
+            <Button variant="outlined" color="secondary" onClick={() => navigate("/employee-info")}>
               Cancel
             </Button>
           </Box>

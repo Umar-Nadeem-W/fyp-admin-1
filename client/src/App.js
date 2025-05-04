@@ -13,6 +13,7 @@ import {
   Dashboard,
   Workers,
   Transactions,
+  Geography,
   Overview,
   Daily,
   Monthly,
@@ -50,12 +51,7 @@ import {
   AssignTask,
   ToolsReports,
   AddDevice,
-  FarmWorkers,
-  CustomerQueries,
-  EmployeeDashboard,
-  EmployeeFarms,
-  EmployeeServicePlans,
-  EmployeeSubscriptions,
+  FishDetails
 } from "scenes";
 
 // App
@@ -70,7 +66,7 @@ const App = () => {
           <CssBaseline />
           <Routes>
             {/* ✅ Public route without layout */}
-            <Route path="/" element={<Auth />} />
+            <Route path="/auth" element={<Auth />} />
 
             {/* ✅ All dashboard routes wrapped inside layout */}
             <Route element={<Layout />}>
@@ -86,6 +82,7 @@ const App = () => {
               <Route path="/pond" element={<PondListPage />} />
               <Route path="/pond/ponddetails/:PondId" element={<PondDetails />} />
               <Route path="/transactions" element={<Transactions />} />
+              <Route path="/geography" element={<Geography />} />
               <Route path="/overview" element={<Overview />} />
               <Route path="/daily" element={<Daily />} />
               <Route path="/monthly" element={<Monthly />} />
@@ -99,7 +96,7 @@ const App = () => {
               <Route path="/communications" element={<Communications />} />
               <Route path="/subcriptionpage" element={<SubscriptionsPage />} />
               <Route path="/farm" element={<Farms />} />
-              <Route path="/ponds" element={<Ponds />} />
+              <Route path="/pondDetails" element={<Ponds />} />
               <Route path="/farm" element={<Farms />} />
               <Route path="/viewdevice" element={<Devices />} />
               <Route path="/tools/new-task" element={<Tools />} />
@@ -112,14 +109,9 @@ const App = () => {
               <Route path="/newtask" element={<NewTask />} />
               <Route path="/addpond" element={<Addpond />} />
               <Route path="tasks/assign-task" element={<AssignTask />} />
-              <Route path="/farmworkers" element={<FarmWorkers />} />
               <Route path="/adddevice" element={<AddDevice />} />
+              <Route path="/fishdetails" element={<FishDetails />} />
               <Route path="/farmOwnerdashboard" element={<FarmOwnerDashboard />} />
-              <Route path="/customerqueries" element={<CustomerQueries />} />
-              <Route path="/employeedashboard" element={<EmployeeDashboard />} />
-              <Route path="/employeeFarms" element={<EmployeeFarms />} />
-              <Route path="/employeeserviceplans" element={<EmployeeServicePlans />} />
-              <Route path="/employeesubscriptions" element={<EmployeeSubscriptions />} />
             </Route>
           </Routes>
         </ThemeProvider>

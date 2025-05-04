@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Box,
   Button,
@@ -10,156 +10,37 @@ import {
   TableRow,
   Typography,
   Paper,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const Fish = () => {
   const navigate = useNavigate();
-  const [fishStocks, setFishStocks] = useState([]);
-  const [fishSpecies, setFishSpecies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedFish, setSelectedFish] = useState(null);
-  const [updatedQuantity, setUpdatedQuantity] = useState("");
-  const [updatedSpeciesId, setUpdatedSpeciesId] = useState("");
-
-  useEffect(() => {
-    const fetchFishStocks = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("Unauthorized! Please login again.");
-          navigate("/login");
-          return;
-        }
-
-        const response = await axios.get(
-          "http://localhost:5000/api/owner/get-all-fish-stockings",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setFishStocks(response.data);
-      } catch (error) {
-        console.error("Error fetching fish stocks:", error);
-        alert("❌ Failed to fetch fish stocks.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchFishSpecies = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          "http://localhost:5000/api/owner/get-all-fish",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setFishSpecies(response.data);
-      } catch (error) {
-        console.error("Error fetching fish species:", error);
-      }
-    };
-
-    fetchFishStocks();
-    fetchFishSpecies();
-  }, [navigate]);
-
-  const handleDelete = async (stockId) => {
-    if (!window.confirm("Are you sure you want to delete this fish stock?")) {
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(
-        `http://localhost:5000/api/owner/delete-fish-stock/${stockId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setFishStocks(prev => prev.filter(fish => fish.id !== stockId));
-      alert("✅ Fish stock deleted successfully.");
-    } catch (error) {
-      console.error("Error deleting fish stock:", error);
-      alert("❌ Failed to delete fish stock.");
-    }
-  };
-
-  const openEditModal = (fish) => {
-    setSelectedFish(fish);
-    setUpdatedQuantity(fish.quantity);
-    setUpdatedSpeciesId(fish.fish_id); // NOTE: you must return fish_id in your GET API
-    setEditModalOpen(true);
-  };
-
-  const handleEditSave = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:5000/api/owner/update-fish-stock/${selectedFish.id}`,
-        {
-          quantity: updatedQuantity,
-          fish_id: updatedSpeciesId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
-      // Find the updated species name from the species list
-      const selectedSpeciesObj = fishSpecies.find(species => species.id === updatedSpeciesId);
-  
-      setFishStocks(prev =>
-        prev.map(fish =>
-          fish.id === selectedFish.id
-            ? {
-                ...fish,
-                quantity: updatedQuantity,
-                fish_id: updatedSpeciesId,
-                fish_species: selectedSpeciesObj ? selectedSpeciesObj.species : fish.fish_species,
-              }
-            : fish
-        )
-      );
-      setEditModalOpen(false);
-      alert("✅ Fish stock updated successfully.");
-    } catch (error) {
-      console.error("Error updating fish stock:", error);
-      alert("❌ Failed to update fish stock.");
-    }
-  };
-  
-
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  const fishStocks = [
+    {
+      id: 1,
+      pond_id: "Pond A",
+      fish_species: "Tilapia",
+      quantity: 200,
+      date_of_stocking: "2023-01-10",
+      age_at_stocking: "2 months",
+      optimal_ph: "6.5-8.5",
+      optimal_temperature: "25-30°C",
+      optimal_turbidity: "10-20 NTU",
+    },
+    {
+      id: 2,
+      pond_id: "Pond B",
+      fish_species: "Catfish",
+      quantity: 150,
+      date_of_stocking: "2023-02-15",
+      age_at_stocking: "3 months",
+      optimal_ph: "6.0-8.0",
+      optimal_temperature: "22-28°C",
+      optimal_turbidity: "15-25 NTU",
+    },
+    // Add more dummy data as needed
+  ];
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -173,17 +54,19 @@ const Fish = () => {
           Add New Fish Stock
         </Button>
       </Box>
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Pond Name</TableCell>
+              <TableCell>Pond ID</TableCell>
               <TableCell>Fish Species</TableCell>
               <TableCell>Quantity</TableCell>
               <TableCell>Date of Stocking</TableCell>
               <TableCell>Age at Stocking</TableCell>
+              <TableCell>Optimal pH</TableCell>
+              <TableCell>Optimal Temperature</TableCell>
+              <TableCell>Optimal Turbidity</TableCell>
               <TableCell>Actions</TableCell>
               <TableCell>View Stats</TableCell>
             </TableRow>
@@ -192,17 +75,20 @@ const Fish = () => {
             {fishStocks.map((fish) => (
               <TableRow key={fish.id}>
                 <TableCell>{fish.id}</TableCell>
-                <TableCell>{fish.pond_name}</TableCell>
+                <TableCell>{fish.pond_id}</TableCell>
                 <TableCell>{fish.fish_species}</TableCell>
                 <TableCell>{fish.quantity}</TableCell>
-                <TableCell>{new Date(fish.date_of_stocking).toLocaleDateString()}</TableCell>
+                <TableCell>{fish.date_of_stocking}</TableCell>
                 <TableCell>{fish.age_at_stocking}</TableCell>
+                <TableCell>{fish.optimal_ph}</TableCell>
+                <TableCell>{fish.optimal_temperature}</TableCell>
+                <TableCell>{fish.optimal_turbidity}</TableCell>
                 <TableCell>
-                  <Button onClick={() => openEditModal(fish)}>
+                  <Button onClick={() => alert(`Edit fish stock: ${fish.fish_species}`)}>
                     <Edit />
                   </Button>
                   <Button
-                    onClick={() => handleDelete(fish.id)}
+                    onClick={() => alert(`Delete fish stock: ${fish.fish_species}`)}
                     sx={{ color: "red" }}
                   >
                     <Delete />
@@ -222,41 +108,6 @@ const Fish = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      {/* Edit Modal */}
-      <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}>
-        <DialogTitle>Edit Fish Stock</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Fish Species</InputLabel>
-            <Select
-              value={updatedSpeciesId}
-              label="Fish Species"
-              onChange={(e) => setUpdatedSpeciesId(e.target.value)}
-            >
-              {fishSpecies.map((species) => (
-                <MenuItem key={species.id} value={species.id}>
-                  {species.species}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            label="Quantity"
-            type="number"
-            fullWidth
-            margin="normal"
-            value={updatedQuantity}
-            onChange={(e) => setUpdatedQuantity(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditModalOpen(false)}>Cancel</Button>
-          <Button onClick={handleEditSave} variant="contained" color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
