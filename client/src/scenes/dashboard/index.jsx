@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  DownloadOutlined,
   Email,
   PointOfSale,
   PersonAdd,
@@ -42,7 +41,7 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get('/api/dashboard');
+      const response = await axios.get('/api/admin/dashboard');
       
       if (response.data) {
         setDashboardData(response.data);
@@ -60,32 +59,6 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
-
-  const handleExportReports = async () => {
-    try {
-      // Request the report from your backend
-      const response = await axios.get('/api/dashboard/export', {
-        responseType: 'blob'
-      });
-      
-      // Create a URL for the blob
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      
-      // Create a temporary anchor element to trigger download
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `dashboard-report-${Date.now()}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      
-      // Clean up
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
-    } catch (err) {
-      console.error('Error downloading report:', err);
-      alert('Failed to download report. Please try again later.');
-    }
-  };
 
   const handleRetry = () => {
     fetchDashboardData();
@@ -123,27 +96,6 @@ const Dashboard = () => {
         {/* Header */}
         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
   
-        {/* Download Reports */}
-        <Box>
-          <Button
-            onClick={handleExportReports}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-  
-              "&:hover": {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary.light,
-              },
-            }}
-          >
-            <DownloadOutlined sx={{ mr: "10px" }} />
-            Download Reports
-          </Button>
-        </Box>
       </FlexBetween>
   
       {/* StatBoxes */}

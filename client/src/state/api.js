@@ -1,17 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Backend Api
 export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl:
-      process.env.REACT_APP_BASE_URL ||
-      "http://localhost:5001",
-  }), // base url
+      process.env.REACT_APP_BASE_URL || "http://localhost:5001", // ✅ your backend
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState()?.auth?.token; // ✅ assuming you store token in Redux
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
   reducerPath: "adminApi",
-  // tags
   tagTypes: [
     "User",
-    "Producs",
+    "Products",
     "Customers",
     "Transactions",
     "Geography",
@@ -20,7 +24,6 @@ export const api = createApi({
     "Performance",
     "Dashboard",
   ],
-  // endpoints
   endpoints: (build) => ({
     getUser: build.query({
       query: (id) => `general/user/${id}`,
@@ -58,14 +61,18 @@ export const api = createApi({
       query: (id) => `management/performance/${id}`,
       providesTags: ["Performance"],
     }),
-    getDashboard: build.query({
+    getDashboardData: build.query({
       query: () => "general/dashboard",
+      providesTags: ["Dashboard"],
+    }),
+    getWorkerDashboard: build.query({
+      query: () => "worker/dashboard", // ✅ remove leading slash
       providesTags: ["Dashboard"],
     }),
   }),
 });
 
-// export api endpoints
+// ✅ Export the correct hook for worker
 export const {
   useGetUserQuery,
   useGetProductsQuery,
@@ -75,5 +82,6 @@ export const {
   useGetSalesQuery,
   useGetAdminsQuery,
   useGetUserPerformanceQuery,
-  useGetDashboardQuery,
+  useGetDashboardDataQuery,
+  useGetWorkerDashboardQuery, // ✅ make sure this is exported
 } = api;

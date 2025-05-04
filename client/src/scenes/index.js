@@ -11,7 +11,6 @@ import ServicePlans from "./serviceplan/[list-plan]";
 import AddPlan from "./serviceplan/[add-plan]";
 import Workers from "./workers";
 import Transactions from "./transactions";
-import Geography from "./employee";
 import Overview from "./overview";
 import Daily from "./daily";
 import Monthly from "./monthly";
@@ -21,12 +20,13 @@ import Performance from "./performance";
 import Tasks from "./tasks";
 import Analytics from "./analytics";
 import Reports from "./reports";
-import Announcements from "./announcements";
+import Announcements from "./admintools/[announcement]";
 import Communications from "./communications";
 import PondDetails from "./pond/[ponddetails]";
 import PondListPage from "./pond";
 import Auth from "./auth";
 import FarmOwnerDashboard from "./user/farmOwner/farmOwner_dashboard";
+import FarmWorkers from "./user/farmOwner/farmworker";
 import Ponds from "./user/farmOwner/ponds/viewponds";
 import Devices from "./user/farmOwner/devices/view devices";
 import Tools from "./user/farmOwner/tools/New Task";
@@ -42,15 +42,26 @@ import AddDevice from "./user/farmOwner/devices/add device";
 import Installations from "./user/farmOwner/installations/view instalations";
 import AddInstallation from "./user/farmOwner/installations/add installation";
 import SubscriptionsPage from "./user/farmOwner/subscriptions";
-import FishDetails from "./user/farmOwner/fish/fish details";
 import AddFish from "./user/farmOwner/fish/add fish";
+import FishDetails from "./user/farmOwner/fish/fish-details";
+import CustomerQueries from "./user/employee/customer queries";
+import EmployeeDashboard from "./user/employee/dashboard";
+import EmployeeFarms from "./user/employee/farms";
+import EmployeeServicePlans from "./user/employee/service plans";
+import EmployeeSubscriptions from "./user/employee/subscriptions";
+import WorkerDashboard from "./user/worker/dashboard";
+import WorkerDevice from "./user/worker/devices";
+import FishStock from "./user/worker/fishstock";
+import WorkerLayout from "./user/worker/layout";
+import WorkerPonds from "./user/worker/ponds";
+import WorkerTasks from "./user/worker/tasks";
+import WorkerAlert from "./user/worker/alerts";
 // export scenes
 export {
   Layout,
   Dashboard,
   Workers,
   Transactions,
-  Geography,
   Overview,
   Daily,
   Monthly,
@@ -88,5 +99,18 @@ export {
   Addpond,
   AssignTask,
   AddDevice,
+  FarmWorkers,
+  CustomerQueries,
+  EmployeeDashboard,
+  EmployeeFarms,
+  EmployeeServicePlans,
+  EmployeeSubscriptions,
+  WorkerDashboard,
+  WorkerDevice,
+  FishStock,
+  WorkerLayout,
+  WorkerPonds,
+  WorkerTasks,
+  WorkerAlert,
   FishDetails
 };

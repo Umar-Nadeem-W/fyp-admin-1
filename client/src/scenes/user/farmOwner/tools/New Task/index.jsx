@@ -9,17 +9,49 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const NewTask = () => {
-  const [category, setCategory] = useState("");
+  const [task_category, setTask_Category] = useState("");
   const [taskType, setTaskType] = useState("");
-  const [description, setDescription] = useState("");
+  const [task_type_description, setTask_Type_Description] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Task Created:\nCategory: ${category}\nType: ${taskType}\nDescription: ${description}`);
-    // Add logic to handle form submission
+  
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      alert("User not authenticated. Please log in again.");
+      return;
+    }
+  
+    try {
+      await axios.post(
+        "http://localhost:5000/api/owner/create-task-category",    
+        {
+          task_category,
+          task_type: taskType,
+          task_type_description,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      alert("✅ Task Created Successfully!");
+      navigate("/newtask");
+    } catch (error) {
+      console.error("Error creating task:", error);
+      alert("❌ Failed to create task. Please try again.");
+    }
   };
+  
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -31,8 +63,8 @@ const NewTask = () => {
           <InputLabel id="category-label">Task Category</InputLabel>
           <Select
             labelId="category-label"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={task_category}
+            onChange={(e) => setTask_Category(e.target.value)}
             required
           >
             <MenuItem value="routine">Routine</MenuItem>
@@ -52,8 +84,8 @@ const NewTask = () => {
           multiline
           rows={4}
           fullWidth
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={task_type_description}
+          onChange={(e) => setTask_Type_Description(e.target.value)}
           sx={{ mb: 2 }}
           required
         />

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
-  DownloadOutlined,
-  Email,
-  PointOfSale,
-  PersonAdd,
-  Traffic,
+  Agriculture,
+  Groups,
+  Pool,
+  Devices,
+  Engineering,
+  SetMeal,
 } from "@mui/icons-material";
 import {
   Box,
@@ -12,225 +13,230 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  CircularProgress,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-import { useGetDashboardQuery } from "state/api";
-import {
-  FlexBetween,
-  Header,
-  BreakdownChart,
-  OverviewChart,
-  StatBox,
-} from "components";
+import { FlexBetween, Header, StatBox } from "components";
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+axios.defaults.baseURL = API_BASE_URL;
 
 const Dashboard = () => {
-  // theme
   const theme = useTheme();
-  // is large desktop screen
+  const navigate = useNavigate();
   const isNonMediumScreen = useMediaQuery("(min-width: 1200px)");
-  // get data
-  const { data, isLoading } = useGetDashboardQuery();
 
-  // data columns
-  const columns = [
-    {
-      field: "_id",
-      headerName: "ID",
-      flex: 1,
-    },
-    {
-      field: "userId",
-      headerName: "User ID",
-      flex: 0.5,
-    },
-    {
-      field: "createdAt",
-      headerName: "Created At",
-      flex: 1,
-    },
-    {
-      field: "products",
-      headerName: "# of Products",
-      flex: 0.5,
-      sortable: false,
-      renderCell: (params) => params.value.length,
-    },
-    {
-      field: "cost",
-      headerName: "Cost",
-      flex: 1,
-      renderCell: (params) => `$${Number(params.value).toFixed(2)}`,
-    },
-  ];
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get("/api/dashboard");
+      if (response.data) {
+        setDashboardData(response.data.data);
+      } else {
+        throw new Error("No data received from server");
+      }
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      setError(err.response?.data?.message || err.message || "Failed to fetch dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  const handleRetry = () => {
+    fetchDashboardData();
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100vh">
+        <Typography variant="h5" color="error" gutterBottom>
+          {error}
+        </Typography>
+        <Button variant="contained" color="primary" onClick={handleRetry} sx={{ mt: 2 }}>
+          Retry
+        </Button>
+      </Box>
+    );
+  }
 
   return (
-    <Box m="1.5rem 2.5rem">
+    <Box m="1.5rem 4rem">
       <FlexBetween>
-        {/* Header */}
-        <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
-
-        {/* Content */}
-        <Box>
-          {/* Download Reports */}
-          <Button
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-
-              "&:hover": {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary.light,
-              },
-            }}
-          >
-            <DownloadOutlined sx={{ mr: "10px" }} />
-            Download Reports
-          </Button>
-        </Box>
+        <Header title="DASHBOARD" subtitle="Farm Management Insights" />
       </FlexBetween>
 
+      {/* Stat Boxes */}
       <Box
         mt="20px"
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
         gridAutoRows="160px"
-        gap="20px"
+        gap="25px"
         sx={{
           "& > div": {
             gridColumn: isNonMediumScreen ? undefined : "span 12",
           },
         }}
       >
-        {/* ROW 1 */}
-        {/* Total Customers */}
-        <StatBox
-          title="Total Customers"
-          value={data && data.totalCustomers}
-          increase="+14%"
-          description="Since last month"
-          icon={
-            <Email
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-
-        {/* Sales Today */}
-        <StatBox
-          title="Sales Today"
-          value={data && data.todayStats.totalSales}
-          increase="+21%"
-          description="Since last month"
-          icon={
-            <PointOfSale
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-
-        {/* Overview Chart */}
         <Box
-          gridColumn="span 8"
-          gridRow="span 2"
-          backgroundColor={theme.palette.background.alt}
-          p="1rem"
-          borderRadius="0.55rem"
+        onClick={() => navigate("/farm")}
+        sx={{
+          cursor: "pointer",
+          width: "110%",
+          height: "100%",
+          backgroundColor: theme.palette.background.alt,
+          borderRadius: "0.75rem",
+          padding: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+            transform: "scale(1.02)",
+          },
+        }}
         >
-          <OverviewChart view="sales" isDashboard={true} />
+        <StatBox
+          title="Total Farms"
+          value={dashboardData?.totalFarms || 0}
+          icon={<Agriculture sx={{ color: theme.palette.secondary[300], fontSize: "50px" }} />}
+        />
         </Box>
-
-        {/* Monthly Sales */}
-        <StatBox
-          title="Monthly Sales"
-          value={data && data.thisMonthStats.totalSales}
-          increase="+5%"
-          description="Since last month"
-          icon={
-            <PersonAdd
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-
-        {/* Yearly Sales */}
-        <StatBox
-          title="Yearly Sales"
-          value={data && data.yearlySalesTotal}
-          increase="+43%"
-          description="Since last month"
-          icon={
-            <Traffic
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-
-        {/* ROW 2 */}
-        {/* Transactions */}
-        <Box
-          gridColumn="span 8"
-          gridRow="span 3"
-          sx={{
-            "& .MuiDataGrid-root": {
-              border: "none",
-              borderRadius: "5rem",
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: theme.palette.background.alt,
-              color: theme.palette.secondary[100],
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              backgroundColor: theme.palette.background.alt,
-            },
-            "& .MuiDataGrid-footerContainer": {
-              backgroundColor: theme.palette.background.alt,
-              color: theme.palette.secondary[100],
-              borderTop: "none",
-            },
-            "& .MuiDataGrid-toolbarContainer .MuiButtom-text": {
-              color: `${theme.palette.secondary[200]} !important`,
-            },
-          }}
+        <Box onClick={() => navigate("/farmworkers")} sx={{
+          cursor: "pointer",
+          width: "110%",
+          height: "100%",
+          backgroundColor: theme.palette.background.alt,
+          borderRadius: "0.75rem",
+          padding: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+            transform: "scale(1.02)",
+          },
+        }}
         >
-          <DataGrid
-            loading={isLoading || !data}
-            getRowId={(row) => row._id}
-            rows={(data && data.transactions) || []}
-            columns={columns}
+        <StatBox
+            title="Total Workers"
+            value={dashboardData?.totalWorkers || 0}
+            icon={<Groups sx={{ color: theme.palette.secondary[300], fontSize: "26px" }} />}
           />
         </Box>
 
-        {/* Sales by Category */}
-        <Box
-          gridColumn="span 4"
-          gridRow="span 3"
-          backgroundColor={theme.palette.background.alt}
-          p="1.5rem"
-          borderRadius="0.55rem"
-        >
-          <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-            Sales by Category
-          </Typography>
+        <Box onClick={() => navigate("/ponds")} sx={{
+          cursor: "pointer",
+          width: "110%",
+          height: "100%",
+          backgroundColor: theme.palette.background.alt,
+          borderRadius: "0.75rem",
+          padding: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+            transform: "scale(1.02)",
+          },
+        }}>
+        <StatBox
+            title="Total Ponds"
+            value={dashboardData?.totalPonds || 0}
+            icon={<Pool sx={{ color: theme.palette.secondary[300], fontSize: "26px" }} />}
+          />
+        </Box>
 
-          <BreakdownChart isDashboard={true} />
-          <Typography
-            p="0 0.6rem"
-            fontSize="0.8rem"
-            sx={{
-              color: theme.palette.secondary[200],
-            }}
-          >
-            Breakdown of real states and information via category for revenue
-            made for this year and total sales
-          </Typography>
+        <Box onClick={() => navigate("/viewdevice")} sx={{
+          cursor: "pointer",
+          width: "110%",
+          height: "100%",
+          backgroundColor: theme.palette.background.alt,
+          borderRadius: "0.75rem",
+          padding: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+            transform: "scale(1.02)",
+          },
+        }}>
+        <StatBox
+            title="Devices Installed"
+            value={dashboardData?.totalDevices || 0}
+            icon={<Devices sx={{ color: theme.palette.secondary[300], fontSize: "26px" }} />}
+          />
+        </Box>
+
+        <Box onClick={() => navigate("/installations")} sx={{
+          cursor: "pointer",
+          width: "110%",
+          height: "100%",
+          backgroundColor: theme.palette.background.alt,
+          borderRadius: "0.75rem",
+          padding: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+            transform: "scale(1.02)",
+          },
+        }}>
+        <StatBox
+            title="Installations"
+            value={dashboardData?.totalInstallations || 0}
+            icon={<Engineering sx={{ color: theme.palette.secondary[300], fontSize: "30px" }} />}
+          />
+        </Box>
+
+        <Box onClick={() => navigate("/fish")} sx={{
+          cursor: "pointer",
+          width: "130%",
+          height: "100%",
+          backgroundColor: theme.palette.background.alt,
+          borderRadius: "0.5rem",
+          padding: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+            transform: "scale(1.02)",
+          },
+        }}>
+        <StatBox
+            title="Fish Stock"
+            value={dashboardData?.totalFish || 0}
+            icon={<SetMeal sx={{ color: theme.palette.secondary[300], fontSize: "26px" }} />}
+          />
         </Box>
       </Box>
     </Box>

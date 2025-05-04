@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({
+    user_name: '',
     email: '',
     password: '',
     confirmPassword: '',
+    contact_number: '',
     role: '',
   });
 
@@ -16,33 +18,6 @@ const Auth = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    if (isLogin) {
-      // Admin login
-  if (form.email === 'admin@123' && form.password === 'admin123') {
-    localStorage.setItem('token', 'admin-token');
-    localStorage.setItem('role', 'Admin');
-    window.location.href = '/dashboard';
-    return;
-  }
-
-  // Farm Owner login
-  if (form.email === 'owner@123' && form.password === 'owner123') {
-    localStorage.setItem('token', 'owner-token');
-    localStorage.setItem('role', 'Farm owner');
-    window.location.href = '/farmOwnerdashboard';
-    return;
-  }
-
-  // Worker login
-  if (form.email === 'worker@machiro.com' && form.password === 'Worker@123') {
-    localStorage.setItem('token', 'worker-token');
-    localStorage.setItem('role', 'Worker');
-    window.location.href = '/dashboard';
-    return;
-  }
-    }
-  
-    // Normal login/signup
     if (!isLogin && form.password !== form.confirmPassword) {
       return alert("Passwords do not match!");
     }
@@ -50,10 +25,10 @@ const Auth = () => {
     const payload = isLogin
       ? { email: form.email, password: form.password }
       : {
+          user_name: form.user_name,
           email: form.email,
           password: form.password,
-          role: form.role,
-          contact_number: '0000000000',
+          role: form.role, // Role is needed during signup
         };
   
     const endpoint = isLogin ? 'login' : 'signup';
@@ -71,8 +46,27 @@ const Auth = () => {
   
       if (isLogin) {
         localStorage.setItem('token', data.token);
-        alert(`Login successful! Role: ${data.user.role}`);
-        window.location.href = '/dashboard';
+        localStorage.setItem('role', data.user.role); // Save the role ID too if needed
+  
+        alert(`Login successful! Role ID: ${data.user.role}`);
+  
+        // Redirect based on role ID
+        if (data.user.role === 1) {
+          // Admin
+          window.location.href = '/dashboard';
+        } else if (data.user.role === 2) {
+          // Employee
+          window.location.href = '/employeedashboard';
+        } else if (data.user.role === 3) {
+          // Worker
+          window.location.href = '/workerdashboard'; // Same as admin for now
+        } else if (data.user.role === 4) {
+          // Farm Owner
+          window.location.href = '/farmOwnerdashboard';
+        } else {
+          // Unknown role
+          alert('Unknown role! Please contact support.');
+        }
       } else {
         alert('Signup successful! You can now log in.');
         setIsLogin(true);
@@ -82,7 +76,7 @@ const Auth = () => {
     }
   };
   
-  
+
   const containerStyle = {
     display: 'flex',
     height: '100vh',
@@ -96,7 +90,7 @@ const Auth = () => {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    fontSize: '3rem',
+    fontSize: '9rem',
     fontWeight: 'bold',
   };
 
@@ -154,15 +148,37 @@ const Auth = () => {
 
   return (
     <div style={containerStyle}>
-      {/* Left Side */}
       <div style={leftStyle}>MACHIRO</div>
 
-      {/* Right Side */}
       <div style={rightStyle}>
         <form style={formStyle} onSubmit={handleSubmit}>
           <h2 style={{ fontSize: '2rem', marginBottom: '20px', color: '#333' }}>
             {isLogin ? 'Login' : 'Sign Up'}
           </h2>
+
+          {!isLogin && (
+            <>
+              <input
+                type="text"
+                name="user_name"
+                placeholder="Username"
+                value={form.user_name}
+                onChange={handleChange}
+                style={inputStyle}
+                required
+              />
+
+              <input
+                type="text"
+                name="contact_number"
+                placeholder="Contact Number"
+                value={form.contact_number}
+                onChange={handleChange}
+                style={inputStyle}
+                required
+              />
+            </>
+          )}
 
           <input
             type="email"
@@ -201,7 +217,7 @@ const Auth = () => {
                   <input
                     type="radio"
                     name="role"
-                    value="Farm owner"
+                    value="owner" // corrected here
                     onChange={handleChange}
                     required
                   />{' '}
@@ -237,14 +253,22 @@ const Auth = () => {
             {isLogin ? (
               <>
                 Don't have an account?
-                <button type="button" onClick={() => setIsLogin(false)} style={switchButtonStyle}>
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(false)}
+                  style={switchButtonStyle}
+                >
                   Create an Account
                 </button>
               </>
             ) : (
               <>
-                <button type="button" onClick={() => setIsLogin(true)} style={switchButtonStyle}>
-                Already have account? Login
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(true)}
+                  style={switchButtonStyle}
+                >
+                  Already have account? Login
                 </button>
               </>
             )}
